@@ -2213,6 +2213,7 @@ static int __maybe_unused flexcan_runtime_suspend(struct device *device)
 	struct flexcan_priv *priv = netdev_priv(dev);
 
 	flexcan_clks_disable(priv);
+	pinctrl_pm_select_sleep_state(priv->dev);
 
 	return 0;
 }
@@ -2222,6 +2223,7 @@ static int __maybe_unused flexcan_runtime_resume(struct device *device)
 	struct net_device *dev = dev_get_drvdata(device);
 	struct flexcan_priv *priv = netdev_priv(dev);
 
+	pinctrl_pm_select_default_state(priv->dev);
 	return flexcan_clks_enable(priv);
 }
 
