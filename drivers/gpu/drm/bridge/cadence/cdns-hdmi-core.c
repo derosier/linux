@@ -251,6 +251,7 @@ EXPORT_SYMBOL_GPL(cdns_hdmi_set_plugged_cb);
 static enum drm_connector_status
 cdns_hdmi_connector_detect(struct drm_connector *connector, bool force)
 {
+	struct edid *edid;
 	struct cdns_mhdp_device *mhdp =
 				container_of(connector, struct cdns_mhdp_device, connector.base);
 	enum drm_connector_status result;
@@ -259,15 +260,21 @@ cdns_hdmi_connector_detect(struct drm_connector *connector, bool force)
 
 	hpd = cdns_mhdp_read_hpd(mhdp);
 
-	if (hpd == 1)
+	if (hpd == 1) {
 		/* Cable Connected */
 		result = connector_status_connected;
-	else if (hpd == 0)
+	} else if (hpd == 0) {
 		/* Cable Disconnedted */
 		result = connector_status_disconnected;
-	else {
+	} else if (mhdp->ddc) {
+		edid = drm_get_edid(connector, mhdp->ddc);
+		if (drm_edid_is_valid(edid))
+			result = connector_status_connected;
+		else
+			result = connector_status_disconnected;
+	} else {
 		/* Cable status unknown */
-		DRM_INFO("Unknow cable status, hdp=%u\n", hpd);
+		DRM_INFO("Unknow cable status, hpd=%u\n", hpd);
 		result = connector_status_unknown;
 	}
 
@@ -289,8 +296,15 @@ static int cdns_hdmi_connector_get_modes(struct drm_connector *connector)
 	int num_modes = 0;
 	struct edid *edid;
 
-	edid = drm_do_get_edid(&mhdp->connector.base,
-				   cdns_hdmi_get_edid_block, mhdp);
+	/*
+	 * Check if optional regular DDC I2C bus should be used.
+	 * Fall-back to using IP/firmware integrated one.
+	 */
+	if (mhdp->ddc)
+		edid = drm_get_edid(&mhdp->connector.base, mhdp->ddc);
+	else
+		edid = drm_do_get_edid(&mhdp->connector.base,
+				       cdns_hdmi_get_edid_block, mhdp);
 	if (edid) {
 		dev_info(mhdp->dev, "%x,%x,%x,%x,%x,%x,%x,%x\n",
 			 edid->header[0], edid->header[1],
@@ -545,6 +559,7 @@ static irqreturn_t cdns_hdmi_irq_thread(int irq, void *data)
 static void cdns_hdmi_parse_dt(struct cdns_mhdp_device *mhdp)
 {
 	struct device_node *of_node = mhdp->dev->of_node;
+	struct device_node *ddc_phandle;
 	int ret;
 
 	ret = of_property_read_u32(of_node, "lane-mapping", &mhdp->lane_mapping);
@@ -553,6 +568,17 @@ static void cdns_hdmi_parse_dt(struct cdns_mhdp_device *mhdp)
 		dev_warn(mhdp->dev, "Failed to get lane_mapping - using default 0xc6\n");
 	}
 	dev_info(mhdp->dev, "lane-mapping 0x%02x\n", mhdp->lane_mapping);
+
+	/* get optional regular DDC I2C bus */
+	ddc_phandle = of_parse_phandle(of_node, "ddc-i2c-bus", 0);
+	if (ddc_phandle) {
+		mhdp->ddc = of_get_i2c_adapter_by_node(ddc_phandle);
+		if (mhdp->ddc)
+			dev_info(mhdp->dev, "Connector's ddc i2c bus found\n");
+		else
+			ret = -EPROBE_DEFER;
+		of_node_put(ddc_phandle);
+	}
 }
 
 static int __cdns_hdmi_probe(struct platform_device *pdev,

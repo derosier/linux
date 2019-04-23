@@ -718,6 +718,7 @@ struct cdns_mhdp_device {
 	hdmi_codec_plugged_cb plugged_cb;
 	struct device *codec_dev;
 	enum drm_connector_status last_connector_result;
+	struct i2c_adapter *ddc;        /* optional regular DDC I2C bus */
 };
 
 u32 cdns_mhdp_bus_read(struct cdns_mhdp_device *mhdp, u32 offset);
