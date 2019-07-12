@@ -370,6 +370,7 @@ static int mxsfb_load(struct drm_device *drm, unsigned long flags)
 		return ret;
 
 	pm_runtime_enable(drm->dev);
+	pm_runtime_get_sync(drm->dev);
 
 	ret = drm_vblank_init(drm, drm->mode_config.num_crtc);
 	if (ret < 0) {
@@ -467,6 +468,7 @@ static void mxsfb_unload(struct drm_device *drm)
 
 	drm->dev_private = NULL;
 
+	pm_runtime_put_sync(drm->dev);
 	pm_runtime_disable(drm->dev);
 }
 
