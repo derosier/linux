@@ -198,7 +198,7 @@
 		clk1m8432: clk1m8432 {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
-			clock-frequency = <1843200>;
+			clock-frequency = <3686400>;
 		};
 
 	};
