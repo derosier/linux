@@ -272,3 +272,7 @@
 	reset-gpios = GP_OTG2_HUB_RESET;
 	status = "okay";
 };
+
+&usdhc1 {
+	no-cqe;
+};
