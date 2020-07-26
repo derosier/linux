@@ -158,8 +158,14 @@ int crypto_register_instance(struct crypto_template *tmpl,
 			     struct crypto_instance *inst);
 void crypto_unregister_instance(struct crypto_instance *inst);
 
+int crypto_init_spawn(struct crypto_spawn *spawn, struct crypto_alg *alg,
+		      struct crypto_instance *inst, u32 mask);
+int crypto_init_spawn2(struct crypto_spawn *spawn, struct crypto_alg *alg,
+		       struct crypto_instance *inst,
+		       const struct crypto_type *frontend);
 int crypto_grab_spawn(struct crypto_spawn *spawn, struct crypto_instance *inst,
 		      const char *name, u32 type, u32 mask);
+
 void crypto_drop_spawn(struct crypto_spawn *spawn);
 struct crypto_tfm *crypto_spawn_tfm(struct crypto_spawn *spawn, u32 type,
 				    u32 mask);
@@ -168,9 +174,21 @@ void *crypto_spawn_tfm2(struct crypto_spawn *spawn);
 struct crypto_attr_type *crypto_get_attr_type(struct rtattr **tb);
 int crypto_check_attr_type(struct rtattr **tb, u32 type);
 const char *crypto_attr_alg_name(struct rtattr *rta);
+struct crypto_alg *crypto_attr_alg2(struct rtattr *rta,
+				    const struct crypto_type *frontend,
+				    u32 type, u32 mask);
+
+static inline struct crypto_alg *crypto_attr_alg(struct rtattr *rta,
+						 u32 type, u32 mask)
+{
+	return crypto_attr_alg2(rta, NULL, type, mask);
+}
+
 int crypto_attr_u32(struct rtattr *rta, u32 *num);
 int crypto_inst_setname(struct crypto_instance *inst, const char *name,
 			struct crypto_alg *alg);
+void *crypto_alloc_instance(const char *name, struct crypto_alg *alg,
+			    unsigned int head);
 
 void crypto_init_queue(struct crypto_queue *queue, unsigned int max_qlen);
 int crypto_enqueue_request(struct crypto_queue *queue,
