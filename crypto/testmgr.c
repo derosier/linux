@@ -2911,7 +2911,7 @@ static void generate_random_cipher_testvec(struct skcipher_request *req,
 					   char *name, size_t max_namelen)
 {
 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
-	const unsigned int maxkeysize = crypto_skcipher_max_keysize(tfm);
+	const unsigned int maxkeysize = tfm->keysize;
 	const unsigned int ivsize = crypto_skcipher_ivsize(tfm);
 	struct scatterlist src, dst;
 	u8 iv[MAX_IVLEN];
@@ -2966,7 +2966,6 @@ static int test_skcipher_vs_generic_impl(const char *driver,
 					 struct cipher_test_sglists *tsgls)
 {
 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
-	const unsigned int maxkeysize = crypto_skcipher_max_keysize(tfm);
 	const unsigned int ivsize = crypto_skcipher_ivsize(tfm);
 	const unsigned int blocksize = crypto_skcipher_blocksize(tfm);
 	const unsigned int maxdatasize = (2 * PAGE_SIZE) - TESTMGR_POISON_LEN;
@@ -3036,8 +3035,7 @@ static int test_skcipher_vs_generic_impl(const char *driver,
 
 	if (maxkeysize != crypto_skcipher_max_keysize(generic_tfm)) {
 		pr_err("alg: skcipher: max keysize for %s (%u) doesn't match generic impl (%u)\n",
-		       driver, maxkeysize,
-		       crypto_skcipher_max_keysize(generic_tfm));
+		       driver, tfm->keysize, generic_tfm->keysize);
 		err = -EINVAL;
 		goto out;
 	}
@@ -3062,7 +3060,7 @@ static int test_skcipher_vs_generic_impl(const char *driver,
 	 * the other implementation against them.
 	 */
 
-	vec.key = kmalloc(maxkeysize, GFP_KERNEL);
+	vec.key = kmalloc(tfm->keysize, GFP_KERNEL);
 	vec.iv = kmalloc(ivsize, GFP_KERNEL);
 	vec.ptext = kmalloc(maxdatasize, GFP_KERNEL);
 	vec.ctext = kmalloc(maxdatasize, GFP_KERNEL);

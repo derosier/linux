@@ -576,7 +576,7 @@ static unsigned int crypto_skcipher_extsize(struct crypto_alg *alg)
 
 static void skcipher_set_needkey(struct crypto_skcipher *tfm)
 {
-	if (crypto_skcipher_max_keysize(tfm) != 0)
+	if (tfm->keysize)
 		crypto_skcipher_set_flags(tfm, CRYPTO_TFM_NEED_KEY);
 }
 
@@ -675,6 +675,7 @@ static int crypto_skcipher_init_tfm(struct crypto_tfm *tfm)
 	skcipher->setkey = skcipher_setkey;
 	skcipher->encrypt = alg->encrypt;
 	skcipher->decrypt = alg->decrypt;
+	skcipher->keysize = alg->max_keysize;
 
 	skcipher_set_needkey(skcipher);
 

@@ -41,6 +41,7 @@ struct crypto_skcipher {
 	int (*decrypt)(struct skcipher_request *req);
 
 	unsigned int reqsize;
+	unsigned int keysize;
 
 	struct crypto_tfm base;
 };
@@ -385,7 +386,13 @@ static inline unsigned int crypto_skcipher_min_keysize(
 static inline unsigned int crypto_skcipher_max_keysize(
 	struct crypto_skcipher *tfm)
 {
-	return crypto_skcipher_alg(tfm)->max_keysize;
+	return tfm->keysize;
+}
+
+static inline unsigned int crypto_skcipher_default_keysize(
+	struct crypto_skcipher *tfm)
+{
+	return tfm->keysize;
 }
 
 /**
