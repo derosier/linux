@@ -241,6 +241,9 @@ static inline struct skcipher_alg *crypto_skcipher_alg(
 
 static inline unsigned int crypto_skcipher_alg_ivsize(struct skcipher_alg *alg)
 {
+	if (alg->base.cra_ablkcipher.encrypt)
+		return alg->base.cra_ablkcipher.ivsize;
+
 	return alg->ivsize;
 }
 
@@ -283,6 +286,9 @@ static inline unsigned int crypto_skcipher_blocksize(
 static inline unsigned int crypto_skcipher_alg_chunksize(
 	struct skcipher_alg *alg)
 {
+	if (alg->base.cra_ablkcipher.encrypt)
+		return alg->base.cra_blocksize;
+
 	return alg->chunksize;
 }
 
