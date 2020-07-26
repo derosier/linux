@@ -175,6 +175,10 @@ static inline u32 skcipher_request_flags(struct skcipher_request *req)
 static inline unsigned int crypto_skcipher_alg_min_keysize(
 	struct skcipher_alg *alg)
 {
+	if ((alg->base.cra_flags & CRYPTO_ALG_TYPE_MASK) ==
+	    CRYPTO_ALG_TYPE_BLKCIPHER)
+		return alg->base.cra_blkcipher.min_keysize;
+
 	if (alg->base.cra_ablkcipher.encrypt)
 		return alg->base.cra_ablkcipher.min_keysize;
 
@@ -184,6 +188,10 @@ static inline unsigned int crypto_skcipher_alg_min_keysize(
 static inline unsigned int crypto_skcipher_alg_max_keysize(
 	struct skcipher_alg *alg)
 {
+	if ((alg->base.cra_flags & CRYPTO_ALG_TYPE_MASK) ==
+	    CRYPTO_ALG_TYPE_BLKCIPHER)
+		return alg->base.cra_blkcipher.max_keysize;
+
 	if (alg->base.cra_ablkcipher.encrypt)
 		return alg->base.cra_ablkcipher.max_keysize;
 
@@ -193,6 +201,10 @@ static inline unsigned int crypto_skcipher_alg_max_keysize(
 static inline unsigned int crypto_skcipher_alg_walksize(
 	struct skcipher_alg *alg)
 {
+	if ((alg->base.cra_flags & CRYPTO_ALG_TYPE_MASK) ==
+	    CRYPTO_ALG_TYPE_BLKCIPHER)
+		return alg->base.cra_blocksize;
+
 	if (alg->base.cra_ablkcipher.encrypt)
 		return alg->base.cra_blocksize;
 

@@ -213,6 +213,10 @@ static int crypto_reportstat_one(struct crypto_alg *alg,
 		if (crypto_report_cipher(skb, alg))
 			goto nla_put_failure;
 		break;
+	case CRYPTO_ALG_TYPE_BLKCIPHER:
+		if (crypto_report_cipher(skb, alg))
+			goto nla_put_failure;
+		break;
 	case CRYPTO_ALG_TYPE_CIPHER:
 		if (crypto_report_cipher(skb, alg))
 			goto nla_put_failure;
