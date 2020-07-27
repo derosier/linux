@@ -597,8 +597,6 @@ static int skcipher_setkey_blkcipher(struct crypto_skcipher *tfm,
 	crypto_blkcipher_set_flags(blkcipher, crypto_skcipher_get_flags(tfm) &
 					      CRYPTO_TFM_REQ_MASK);
 	err = crypto_blkcipher_setkey(blkcipher, key, keylen);
-	crypto_skcipher_set_flags(tfm, crypto_blkcipher_get_flags(blkcipher) &
-				       CRYPTO_TFM_RES_MASK);
 	if (unlikely(err)) {
 		skcipher_set_needkey(tfm);
 		return err;
@@ -697,9 +695,6 @@ static int skcipher_setkey_ablkcipher(struct crypto_skcipher *tfm,
 				    crypto_skcipher_get_flags(tfm) &
 				    CRYPTO_TFM_REQ_MASK);
 	err = crypto_ablkcipher_setkey(ablkcipher, key, keylen);
-	crypto_skcipher_set_flags(tfm,
-				  crypto_ablkcipher_get_flags(ablkcipher) &
-				  CRYPTO_TFM_RES_MASK);
 	if (unlikely(err)) {
 		skcipher_set_needkey(tfm);
 		return err;

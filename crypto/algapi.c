@@ -699,7 +699,7 @@ int crypto_grab_spawn(struct crypto_spawn *spawn, struct crypto_instance *inst,
 
 	return err;
 }
-EXPORT_SYMBOL_GPL(crypto_init_spawn);
+EXPORT_SYMBOL_GPL(crypto_grab_spawn);
 
 int crypto_init_spawn2(struct crypto_spawn *spawn, struct crypto_alg *alg,
 		       struct crypto_instance *inst,
@@ -711,7 +711,7 @@ int crypto_init_spawn2(struct crypto_spawn *spawn, struct crypto_alg *alg,
 		goto out;
 
 	spawn->frontend = frontend;
-	err = crypto_init_spawn(spawn, alg, inst, frontend->maskset);
+	err = crypto_grab_spawn(spawn, inst, alg->cra_name, frontend->type, frontend->maskset);
 
 out:
 	return err;

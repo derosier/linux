@@ -221,7 +221,6 @@ static int ablkcipher_walk_next(struct ablkcipher_request *req,
 	alignmask = crypto_tfm_alg_alignmask(tfm);
 	n = walk->total;
 	if (unlikely(n < crypto_tfm_alg_blocksize(tfm))) {
-		req->base.flags |= CRYPTO_TFM_RES_BAD_BLOCK_LEN;
 		return ablkcipher_walk_done(req, walk, -EINVAL);
 	}
 
@@ -321,7 +320,6 @@ static int setkey(struct crypto_ablkcipher *tfm, const u8 *key,
 	unsigned long alignmask = crypto_ablkcipher_alignmask(tfm);
 
 	if (keylen < cipher->min_keysize || keylen > cipher->max_keysize) {
-		crypto_ablkcipher_set_flags(tfm, CRYPTO_TFM_RES_BAD_KEY_LEN);
 		return -EINVAL;
 	}
 
