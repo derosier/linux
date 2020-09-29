@@ -2410,12 +2410,16 @@ static int imx6_pcie_probe(struct platform_device *pdev)
 		}
 	}
 
-	imx6_pcie->phy = devm_phy_get(dev, "pcie-phy");
-	if (IS_ERR(imx6_pcie->phy)) {
-		if (PTR_ERR(imx6_pcie->phy) == -EPROBE_DEFER)
-			return -EPROBE_DEFER;
-		/* Set NULL if there is no pcie-phy */
-		imx6_pcie->phy = NULL;
+	/* pcie-phy uses in iMX8MP variant only */
+	if (imx6_pcie->drvdata->variant == IMX8MP) {
+		imx6_pcie->phy = devm_phy_get(dev, "pcie-phy");
+		if (IS_ERR(imx6_pcie->phy)) {
+			if (PTR_ERR(imx6_pcie->phy) == -EPROBE_DEFER)
+				return -EPROBE_DEFER;
+			dev_info(dev, "couldn't get pcie-phy\n");
+			/* Set NULL if there is no pcie-phy */
+			imx6_pcie->phy = NULL;
+		}
 	}
 
 	/* Find the HSIO MIX if one is defined, only imx8mp uses it */
