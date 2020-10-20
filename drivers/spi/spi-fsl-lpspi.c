@@ -891,6 +891,8 @@ static int fsl_lpspi_probe(struct platform_device *pdev)
 
 		for (i = 0; i < controller->num_chipselect; i++) {
 			int cs_gpio = of_get_named_gpio(np, "cs-gpios", i);
+			if (cs_gpio == -EPROBE_DEFER)
+				return -EPROBE_DEFER;
 
 			if (cs_gpio == -EPROBE_DEFER) {
 				ret = -EPROBE_DEFER;
