@@ -86,6 +86,8 @@
 #define TCR_RXMSK	BIT(19)
 #define TCR_TXMSK	BIT(18)
 
+static int clkdivs[] = {1, 2, 4, 8, 16, 32, 64, 128};
+
 struct lpspi_config {
 	u8 bpw;
 	u8 chip_select;
@@ -325,14 +327,15 @@ static int fsl_lpspi_set_bitrate(struct fsl_lpspi_data *fsl_lpspi)
 	}
 
 	for (prescale = 0; prescale < 8; prescale++) {
-		scldiv = perclk_rate / config.speed_hz / (1 << prescale) - 2;
+		scldiv = perclk_rate /
+			 (clkdivs[prescale] * config.speed_hz) - 2;
 		if (scldiv < 256) {
 			fsl_lpspi->config.prescale = prescale;
 			break;
 		}
 	}
 
-	if (scldiv >= 256)
+	if (prescale == 8 && scldiv >= 256)
 		return -EINVAL;
 
 	writel(scldiv | (scldiv << 8) | ((scldiv >> 1) << 16),
@@ -891,8 +894,11 @@ static int fsl_lpspi_probe(struct platform_device *pdev)
 
 		for (i = 0; i < controller->num_chipselect; i++) {
 			int cs_gpio = of_get_named_gpio(np, "cs-gpios", i);
-			if (cs_gpio == -EPROBE_DEFER)
-				return -EPROBE_DEFER;
+
+			if (cs_gpio == -EPROBE_DEFER) {
+				ret = -EPROBE_DEFER;
+				goto out_controller_put;
+			}
 
 			if (cs_gpio == -EPROBE_DEFER) {
 				ret = -EPROBE_DEFER;
