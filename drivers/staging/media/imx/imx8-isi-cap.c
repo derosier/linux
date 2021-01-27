@@ -1789,8 +1789,8 @@ static int mxc_isi_register_cap_device(struct mxc_isi_cap_dev *isi_cap,
 err_ctrl_free:
 #ifndef CONFIG_VIDEO_ECAM
 	mxc_isi_ctrls_delete(isi_cap);
-#endif
 err_me_cleanup:
+#endif
 	media_entity_cleanup(&vdev->entity);
 err_free_ctx:
 	return ret;
