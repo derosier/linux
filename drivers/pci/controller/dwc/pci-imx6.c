@@ -1970,19 +1970,6 @@ static int imx6_pcie_host_init(struct pcie_port *pp)
 	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
 	struct imx6_pcie *imx6_pcie = to_imx6_pcie(pci);
 
-	if (imx6_pcie->power_on_gpiod)
-		gpiod_set_value_cansleep(imx6_pcie->power_on_gpiod, 1);
-
-#if 1 /* TODO: Check whether this code is needed for now */
-	imx6_pcie_assert_core_reset(imx6_pcie);
-	imx6_pcie_init_phy(imx6_pcie);
-	if(imx6_pcie_deassert_core_reset(imx6_pcie) == -ENODEV) {
-		if (imx6_pcie->power_on_gpiod)
-			gpiod_set_value_cansleep(imx6_pcie->power_on_gpiod, 0);
-		return -ENODEV;
-	}
-	imx6_setup_phy_mpll(imx6_pcie);
-#endif
 	dw_pcie_setup_rc(pp);
 	pci_imx_set_msi_en(pp);
 	if (imx6_pcie_establish_link(imx6_pcie))
@@ -2758,7 +2745,12 @@ static int imx6_pcie_probe(struct platform_device *pdev)
 
 	imx6_pcie_assert_core_reset(imx6_pcie);
 	imx6_pcie_init_phy(imx6_pcie);
-	imx6_pcie_deassert_core_reset(imx6_pcie);
+	ret = imx6_pcie_deassert_core_reset(imx6_pcie);
+	if (ret == -ENODEV) {
+		if (imx6_pcie->power_on_gpiod)
+			gpiod_set_value_cansleep(imx6_pcie->power_on_gpiod, 0);
+		goto err_reg;
+	}
 	imx6_setup_phy_mpll(imx6_pcie);
 
 	val = dw_pcie_readl_dbi(pci, PCIE_AMBA_ORDERING_CTRL_OFF);
