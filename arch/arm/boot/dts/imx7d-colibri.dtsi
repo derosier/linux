@@ -8,6 +8,10 @@
 
 / {
 	aliases {
+		/* add ethernet aliases which is required to proprely pass mac
+		   address from bootloader. Also with the update to 5.4.70-2.3.0
+		   the kernel hangs without these aliases.
+		 */
 		ethernet0 = &fec1;
 		ethernet1 = &fec2;
 	};
