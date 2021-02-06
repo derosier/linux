@@ -245,20 +245,13 @@
 		};
 	};
 
-	sound-hdmi {
+	sound_hdmi: sound-hdmi {
 		compatible = "fsl,imx-audio-cdnhdmi";
 		model = "imx-audio-hdmi-tx";
 		audio-cpu = <&sai5>;
 		protocol = <1>;
 		hdmi-out;
-	};
-
-	sound-hdmi-arc {
-		compatible = "fsl,imx-audio-spdif";
-		model = "imx-hdmi-arc";
-		spdif-controller = <&spdif1>;
-		spdif-in;
-		spdif-out;
+		status = "disabled";
 	};
 
 	sound-spdif {
