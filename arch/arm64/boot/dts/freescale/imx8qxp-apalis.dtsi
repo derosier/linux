@@ -351,9 +351,8 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_fec1>;
 	fsl,magic-packet;
-	fsl,rgmii_txc_dly;
 	phy-handle = <&ethphy0>;
-	phy-mode = "rgmii";
+	phy-mode = "rgmii-id";
 	phy-reset-duration = <10>;
 	phy-reset-gpios = <&lsio_gpio3 4 GPIO_ACTIVE_LOW>;
 
