@@ -119,12 +119,13 @@
 		i2c-gpio,delay-us = <2>;	/* ~100 kHz */
 		#address-cells = <1>;
 		#size-cells = <0>;
-		status = "okay";
+		status = "disabled";
 
 		/* Extension connector pin 15/16 */
 		hdmi_ddc: edid@50 {
 			compatible = "fsl,imx6-hdmi-i2c";
 			reg = <0x50>;
+			status = "disabled";
 		};
 	};
 
@@ -180,7 +181,7 @@
 			     "fsl,imx-audio-hdmi";
 		model = "imx-audio-hdmi";
 		hdmi-controller = <&hdmi_audio>;
-		status = "okay";
+		status = "disabled";
 	};
 
 	/* Optional S/PDIF in on SODIMM 88 and out on SODIMM 90, 137 or 168 */
@@ -469,20 +470,16 @@
 			  "SODIMM_137";
 };
 
-&hdmi_audio {
-	status = "okay";
-};
-
 &hdmi_core {
 	ipu_id = <0>;
 	disp_id = <1>;
-	status = "okay";
+	status = "disabled";
 };
 
 &hdmi_video {
 	fsl,phy_reg_vlev = <0x0294>;
 	fsl,phy_reg_cksymtx = <0x800d>;
-	status = "okay";
+	status = "disabled";
 };
 
 /*
