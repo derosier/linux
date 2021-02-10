@@ -665,6 +665,12 @@
 		reg = <0x4a>;
 		/* Verdin MEZ_GPIO_2 (SODIMM 208) */
 		reset-gpios = <&gpio5 5 GPIO_ACTIVE_HIGH>;
+	};
+
+	/* temperature sensor on carrier board */
+	hwmon_temp: hwmontemp@4f {
+		compatible = "ti,tmp75c";
+		reg = <0x4f>;
 		status = "disabled";
 	};
 
