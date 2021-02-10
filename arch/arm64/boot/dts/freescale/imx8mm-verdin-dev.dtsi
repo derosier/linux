@@ -5,17 +5,56 @@
 
 #include "imx8mm-verdin-dahlia.dtsi"
 
+/ {
+	sound_card: sound-card {
+		compatible = "simple-audio-card";
+		simple-audio-card,bitclock-master = <&dailink_master>;
+		simple-audio-card,format = "i2s";
+		simple-audio-card,frame-master = <&dailink_master>;
+		simple-audio-card,name = "imx8mm-nau8822";
+		simple-audio-card,routing =
+			"Headphones", "LHP",
+			"Headphones", "RHP",
+			"Speaker", "LSPK",
+			"Speaker", "RSPK",
+			"Line Out", "AUXOUT1",
+			"Line Out", "AUXOUT2",
+			"LAUX", "Line In",
+			"RAUX", "Line In",
+			"LMICP",    "Mic In",
+			"RMICP",    "Mic In";
+		simple-audio-card,widgets =
+			"Headphones", "Headphones",
+			"Line Out", "Line Out",
+			"Speaker", "Speaker",
+			"Microphone", "Mic In",
+			"Line", "Line In";
+
+		dailink_master: simple-audio-card,codec {
+			sound-dai = <&nau8822_1a>;
+			clocks = <&clk IMX8MM_CLK_SAI2_ROOT>;
+		};
+
+		simple-audio-card,cpu {
+			sound-dai = <&sai2>;
+		};
+	};
+};
+
 &gpio_expander_21 {
 	status = "okay";
 };
 
-&sound_card {
-	simple-audio-card,routing =
-		"Headphone Jack", "HPOUTL",
-		"Headphone Jack", "HPOUTR",
-		"IN2L", "Line In Jack",
-		"IN2R", "Line In Jack",
-		"Microphone Jack", "MICBIAS",
-		"IN1L", "Microphone Jack",
-		"IN1R", "Microphone Jack";
+/* Verdin I2C_1 */
+&i2c4 {
+	/* Audio Codec */
+	nau8822_1a: codec-nau@1a {
+		compatible = "nuvoton,nau8822";
+		#sound-dai-cells = <0>;
+		reg = <0x1a>;
+	};
+};
+
+&wm8904_1a {
+	status = "disabled";
 };

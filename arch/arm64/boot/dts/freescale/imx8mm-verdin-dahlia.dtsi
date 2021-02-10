@@ -3,6 +3,36 @@
  * Copyright 2020 Toradex
  */
 
+/ {
+	sound_card: sound-card {
+		compatible = "simple-audio-card";
+		simple-audio-card,bitclock-master = <&dailink_master>;
+		simple-audio-card,format = "i2s";
+		simple-audio-card,frame-master = <&dailink_master>;
+		simple-audio-card,name = "imx8mm-wm8904";
+		simple-audio-card,routing =
+			"Headphone Jack", "HPOUTL",
+			"Headphone Jack", "HPOUTR",
+			"IN2L", "Line In Jack",
+			"IN2R", "Line In Jack",
+			"Headphone Jack", "MICBIAS",
+			"IN1L", "Headphone Jack";
+		simple-audio-card,widgets =
+			"Microphone", "Microphone Jack",
+			"Headphone", "Headphone Jack",
+			"Line", "Line In Jack";
+
+		dailink_master: simple-audio-card,codec {
+			sound-dai = <&wm8904_1a>;
+			clocks = <&clk IMX8MM_CLK_SAI2_ROOT>;
+		};
+
+		simple-audio-card,cpu {
+			sound-dai = <&sai2>;
+		};
+	};
+};
+
 /* Verdin SPI_1 */
 &ecspi2 {
 	status = "okay";
@@ -47,8 +77,23 @@
 	status = "okay";
 };
 
+/* Verdin I2C_1 */
 &i2c4 {
 	status = "okay";
+
+	/* Audio Codec */
+	wm8904_1a: codec@1a {
+		compatible = "wlf,wm8904";
+		#sound-dai-cells = <0>;
+		clocks = <&clk IMX8MM_CLK_SAI2_ROOT>;
+		clock-names = "mclk";
+		reg = <0x1a>;
+		DCVDD-supply = <&reg_3p3v>;
+		DBVDD-supply = <&reg_3p3v>;
+		AVDD-supply = <&reg_3p3v>;
+		CPVDD-supply = <&reg_3p3v>;
+		MICVDD-supply = <&reg_3p3v>;
+	};
 };
 
 /* Verdin PCIE_1 */
@@ -103,10 +148,5 @@
 
 /* Verdin SD_1 */
 &usdhc2 {
-	status = "okay";
-};
-
-/* Audio Codec */
-&wm8904_1a {
 	status = "okay";
 };
