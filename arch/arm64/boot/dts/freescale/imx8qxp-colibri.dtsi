@@ -529,6 +529,18 @@
 	clock-frequency = <100000>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c1>;
+
+	/* Atmel maxtouch controller */
+        atmel_mxt_ts: touchscreen@4a {
+		compatible = "atmel,maxtouch";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_atmel_conn>;
+		reg = <0x4a>;
+		interrupt-parent = <&lsio_gpio3>;
+		interrupts = <20 IRQ_TYPE_EDGE_FALLING>;                /* SODIMM 107 */
+		reset-gpios = <&lsio_gpio3 24 GPIO_ACTIVE_HIGH>;        /* SODIMM 106 */
+                status = "disabled";
+        };
 };
 
 &imx8_gpu_ss {
@@ -555,6 +567,26 @@
 				IMX8QXP_ADC_IN1_ADMA_ADC_IN1			0x60		/* SODIMM   6 */
 				IMX8QXP_ADC_IN4_ADMA_ADC_IN4			0x60		/* SODIMM   4 */
 				IMX8QXP_ADC_IN5_ADMA_ADC_IN5			0x60		/* SODIMM   2 */
+			>;
+		};
+
+		/* Atmel MXT touchsceen + boards with built-in Capacitive Touch Connector */
+		pinctrl_atmel_conn: mxt-ts-connector {
+			fsl,pins = <
+				IMX8QXP_QSPI0B_DATA2_LSIO_GPIO3_IO20            0x4000021	/* SODIMM 107 */
+				IMX8QXP_QSPI0B_SS1_B_LSIO_GPIO3_IO24            0x21		/* SODIMM 106 */
+			>;
+		};
+
+		/* Atmel MXT touchsceen + Capacitive Touch Adapter */
+		/* NOTE: This pingroup conflicts with pingroups
+		 * pinctrl_pwm_b/pinctrl_pwm_c. Don't enable them
+		 * simultaneously.
+		 */
+		pinctrl_atmel_adap: mxt-ts-adapter {
+			fsl,pins = <
+				IMX8QXP_UART1_TX_LSIO_GPIO0_IO21		0x4000021	/* SODIMM  28 */
+				IMX8QXP_UART1_RX_LSIO_GPIO0_IO22		0x21		/* SODIMM  30 */
 			>;
 		};
 
