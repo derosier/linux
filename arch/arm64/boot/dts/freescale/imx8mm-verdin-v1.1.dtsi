@@ -133,9 +133,8 @@
 			"Headphone Jack", "HPOUTR",
 			"IN2L", "Line In Jack",
 			"IN2R", "Line In Jack",
-			"Microphone Jack", "MICBIAS",
-			"IN1L", "Microphone Jack",
-			"IN1R", "Microphone Jack";
+			"Headphone Jack", "MICBIAS",
+			"IN1L", "Microphone Jack";
 		simple-audio-card,widgets =
 			"Microphone", "Microphone Jack",
 			"Headphone", "Headphone Jack",
