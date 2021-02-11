@@ -129,34 +129,6 @@
 			reg = <0 0x55800000 0 0x800000>;
 		};
 	};
-
-	sound_card: sound-card {
-		compatible = "simple-audio-card";
-		simple-audio-card,bitclock-master = <&dailink_master>;
-		simple-audio-card,format = "i2s";
-		simple-audio-card,frame-master = <&dailink_master>;
-		simple-audio-card,name = "imx8mm-wm8904";
-		simple-audio-card,routing =
-			"Headphone Jack", "HPOUTL",
-			"Headphone Jack", "HPOUTR",
-			"IN2L", "Line In Jack",
-			"IN2R", "Line In Jack",
-			"Headphone Jack", "MICBIAS",
-			"IN1L", "Headphone Jack";
-		simple-audio-card,widgets =
-			"Microphone", "Microphone Jack",
-			"Headphone", "Headphone Jack",
-			"Line", "Line In Jack";
-
-		dailink_master: simple-audio-card,codec {
-			sound-dai = <&wm8904_1a>;
-			clocks = <&audiomix_clk IMX8MP_CLK_AUDIOMIX_SAI1_MCLK1>;
-		};
-
-		simple-audio-card,cpu {
-			sound-dai = <&sai1>;
-		};
-	};
 };
 
 &A53_0 {
@@ -493,21 +465,6 @@
 	pinctrl-1 = <&pinctrl_i2c4_gpio>;
 	scl-gpios = <&gpio5 20 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	sda-gpios = <&gpio5 21 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
-
-	/* Audio Codec */
-	wm8904_1a: codec@1a {
-		compatible = "wlf,wm8904";
-		#sound-dai-cells = <0>;
-		clocks = <&audiomix_clk IMX8MP_CLK_AUDIOMIX_SAI1_MCLK1>;
-		clock-names = "mclk";
-		reg = <0x1a>;
-		status = "disabled";
-		DCVDD-supply = <&reg_3p3v>;
-		DBVDD-supply = <&reg_3p3v>;
-		AVDD-supply = <&reg_3p3v>;
-		CPVDD-supply = <&reg_3p3v>;
-		MICVDD-supply = <&reg_3p3v>;
-	};
 
 	gpio_expander_21: gpio-expander@21 {
 		compatible = "nxp,pcal6416";
