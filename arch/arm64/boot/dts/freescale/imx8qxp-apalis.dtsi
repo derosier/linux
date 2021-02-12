@@ -432,6 +432,16 @@
 		pagesize = <16>;
         };
 
+	lt8912_hdmi: dsi-hdmi@48 {
+		compatible = "lontium,lt8912";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_hdmi_int>;
+		ddc-i2c-bus = <&i2c0_mipi_lvds1>;
+		hpd-gpios = <&pcal6416_1 15 GPIO_ACTIVE_HIGH>;
+		reg = <0x48>;
+		status = "disabled";
+	};
+
 	/* PCAL6416A GPIO Expander */
 	pcal6416_1: gpio@20 {
 		compatible = "nxp,pcal6416";
@@ -492,6 +502,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c0_mipi_lvds1>;
 	clock-frequency = <100000>;
+	status = "disabled";
 };
 
 /* Apalis I2C1 */
@@ -658,6 +669,13 @@
 		pinctrl_gpio8: gpio8grp {
 			fsl,pins = <
 				IMX8QXP_QSPI0B_DATA2_LSIO_GPIO3_IO20		0x21		/* MXM3 17 */
+			>;
+		};
+
+		/* HDMI Bridge Interrupt */
+		pinctrl_hdmi_int: hdmibridgeintgrp {
+			fsl,pins = <
+				IMX8QXP_MIPI_CSI0_I2C0_SDA_LSIO_GPIO3_IO06	0x21		/* HDMI_BRIDGE_INT# */
 			>;
 		};
 

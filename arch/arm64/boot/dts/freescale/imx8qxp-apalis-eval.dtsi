@@ -211,24 +211,6 @@
 	pad-wakeup-num = <1>;
 };
 
-/* On-module GPIO Expander */
-&pcal6416_1 {
-	/*
-	 * This gpio-hog drives a muxing device. With that we can choose
-	 * if LVDS1_B pins are active or if DVI signals are active. Those
-	 * signals are then muxed to MIPI_DSI1 PADs.
-	 *
-	 * output-high; muxes to DVI signals
-	 * output-low; muxes to LVDS1_B signals
-	 */
-	LVDS_HDMI_MUX {
-		gpio-hog;
-		gpios = <14 0>;
-		output-high;
-		line-name = "LVDS_HDMI_MUX";
-	};
-};
-
 /* Apalis PCIE1 */
 &pcieb {
         status = "okay";
