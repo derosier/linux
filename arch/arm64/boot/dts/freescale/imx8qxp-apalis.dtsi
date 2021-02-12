@@ -501,6 +501,18 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_lpi2c1>;
 	clock-frequency = <100000>;
+
+	/* Atmel maxtouch controller */
+	atmel_mxt_ts: touchscreen@4a {
+		compatible = "atmel,maxtouch";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_gpio5>, <&pinctrl_gpio6>;
+		reg = <0x4a>;
+		interrupt-parent = <&lsio_gpio3>;
+		interrupts = <17 IRQ_TYPE_EDGE_FALLING>;                /* Apalis GPIO5 */
+		reset-gpios = <&lsio_gpio3 18 GPIO_ACTIVE_HIGH>;        /* Apalis GPIO6 */
+		status = "disabled";
+	};
 };
 
 /* Apalis I2C3 (CAM) */
