@@ -607,17 +607,17 @@ static int lt8912_probe(struct i2c_client *i2c, const struct i2c_device_id *id)
 	lt->channel_id = 1;
 
 	endpoint = of_graph_get_next_endpoint(dev->of_node, NULL);
-	if (!endpoint)
-		return -ENODEV;
-
-	lt->host_node = of_graph_get_remote_port_parent(endpoint);
-	if (!lt->host_node) {
-		of_node_put(endpoint);
-		return -ENODEV;
+	if (!endpoint) {
+		ret = -ENODEV;
+		goto put_i2c_ddc;
 	}
 
+	lt->host_node = of_graph_get_remote_port_parent(endpoint);
 	of_node_put(endpoint);
-	of_node_put(lt->host_node);
+	if (!lt->host_node) {
+		ret = -ENODEV;
+		goto put_i2c_ddc;
+	}
 
 	lt->bridge.funcs = &lt8912_bridge_funcs;
 	lt->bridge.of_node = dev->of_node;
@@ -637,6 +637,7 @@ static int lt8912_remove(struct i2c_client *i2c)
 	lt8912_sleep(lt);
 	mipi_dsi_detach(lt->dsi);
 	drm_bridge_remove(&lt->bridge);
+	of_node_put(lt->host_node);
 
 	return 0;
 }
