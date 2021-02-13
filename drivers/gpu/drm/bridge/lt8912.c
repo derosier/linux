@@ -317,7 +317,7 @@ static int lt8912_connector_get_modes(struct drm_connector *connector)
 	} else { /* if not EDID, use dtb timings */
 		timings = of_get_display_timings(lt->dev->of_node);
 
-		if (timings->num_timings == 0) {
+		if (!timings || timings->num_timings == 0) {
 			dev_err(lt->dev, "failed to get display timings from dtb\n");
 			return 0;
 		}
