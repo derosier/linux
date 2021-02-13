@@ -559,9 +559,9 @@ static int lt8912_probe(struct i2c_client *i2c, const struct i2c_device_id *id)
 	ddc_phandle = of_parse_phandle(dev->of_node, "ddc-i2c-bus", 0);
 	if (ddc_phandle) {
 		lt->ddc = of_get_i2c_adapter_by_node(ddc_phandle);
-		if (!(lt->ddc))
-			ret = -EPROBE_DEFER;
 		of_node_put(ddc_phandle);
+		if (!(lt->ddc))
+			return -EPROBE_DEFER;
 	}
 
 	lt->hpd_gpio = devm_gpiod_get(dev, "hpd", GPIOD_IN);
