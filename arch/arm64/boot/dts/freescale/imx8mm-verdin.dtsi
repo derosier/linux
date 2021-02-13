@@ -21,8 +21,8 @@
 		compatible = "pwm-backlight";
 		brightness-levels = <0 45 63 88 119 158 203 255>;
 		default-brightness-level = <4>;
-		/* Verdin MEZ_DSI_1_BKL_EN (SODIMM 21) */
-		enable-gpios = <&gpio3 3 GPIO_ACTIVE_HIGH>;
+		/*  Verdin MEZ_DSI_1_BKL_EN (SODIMM 46) */
+		enable-gpios = <&gpio3 24 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_mez_dsi_1_bkl_en>;
 		power-supply = <&reg_3p3v>;
@@ -556,10 +556,9 @@
 
 	lvds_ti_sn65dsi83: bridge@2c {
 		compatible = "ti,sn65dsi83";
-		/* Verdin MEZ_GPIO_1 (SODIMM 206) */
-		enable-gpios = <&gpio3 4 GPIO_ACTIVE_HIGH>;
+		enable-gpios = <&gpio3 3 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_mez_gpio1>;
+		pinctrl-0 = <&pinctrl_mez_dsi_1_gpio10>, <&pinctrl_mez_dsi_1_int_n>;
 		reg = <0x2c>;
 		status = "disabled";
 		ti,dsi-lanes = <4>;
@@ -602,27 +601,25 @@
 	hdmi_lontium_lt8912: hdmi@48 {
 		compatible = "lontium,lt8912";
 		ddc-i2c-bus = <&i2c2>;
-		/* Verdin MEZ_DSI_1_INT HPD (SODIMM 17) shared with MEZ_GPIO_1 (SODIMM 206) */
-		hpd-gpios = <&gpio3 15 GPIO_ACTIVE_HIGH>;
+		/* Verdin MEZ_DSI_1_INT HPD (SODIMM 19) */
+		hpd-gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_mez_dsi_1_int_hpd>, <&pinctrl_mez_gpio1>,
-			    <&pinctrl_mez_gpio2>;
+		pinctrl-0 = <&pinctrl_mez_dsi_1_gpio10>, <&pinctrl_mez_dsi_1_hpd>;
 		reg = <0x48>;
-		/* Verdin MEZ_GPIO_2 (SODIMM 208) */
-		reset-gpios = <&gpio5 5 GPIO_ACTIVE_LOW>;
+		reset-gpios = <&gpio3 3 GPIO_ACTIVE_LOW>;
 		status = "disabled";
 	};
 
 	atmel_mxt_ts: touch@4a {
 		compatible = "atmel,maxtouch";
-		/* Verdin MEZ_DSI_1_INT# (SODIMM 17) */
+		/* Verdin MEZ_DSI_1_INT# (SODIMM 17) shared. Pinctrl by &lvds_ti_sn65dsi83 */
 		interrupt-parent = <&gpio3>;
 		interrupts = <15 IRQ_TYPE_EDGE_FALLING>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_mez_dsi_1_int_n>, <&pinctrl_mez_gpio2>;
+		pinctrl-0 = <&pinctrl_mez_touchreset>;
 		reg = <0x4a>;
-		/* Verdin MEZ_GPIO_2 (SODIMM 208) */
-		reset-gpios = <&gpio5 5 GPIO_ACTIVE_HIGH>;
+		reset-gpios = <&gpio3 23 GPIO_ACTIVE_HIGH>;
+		status = "disabled";
 	};
 
 	/* temperature sensor on carrier board */
@@ -821,10 +818,11 @@
 
 &iomuxc {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_gpio3>, <&pinctrl_gpio4>, <&pinctrl_gpio7>,
-		    <&pinctrl_gpio8>, <&pinctrl_gpio_hog1>,
-		    <&pinctrl_gpio_hog2>, <&pinctrl_gpio_hog3>,
-		    <&pinctrl_sai5>, <&pinctrl_pmic_tpm_ena>;
+	pinctrl-0 = <&pinctrl_gpio1>, <&pinctrl_gpio2>,
+		    <&pinctrl_gpio3>, <&pinctrl_gpio4>,
+		    <&pinctrl_gpio7>, <&pinctrl_gpio8>,
+		    <&pinctrl_gpio_hog1>, <&pinctrl_gpio_hog2>, <&pinctrl_gpio_hog3>,
+		    <&pinctrl_pmic_tpm_ena>;
 
 	pinctrl_can1_int: can1intgrp {
 		fsl,pins = <
@@ -913,6 +911,18 @@
 			MX8MM_IOMUXC_NAND_DATA01_QSPI_A_DATA1		0x82	/* SODIMM 58 */
 			MX8MM_IOMUXC_NAND_DATA02_QSPI_A_DATA2		0x82	/* SODIMM 60 */
 			MX8MM_IOMUXC_NAND_DATA03_QSPI_A_DATA3		0x82	/* SODIMM 62 */
+		>;
+	};
+
+	pinctrl_gpio1: gpio1grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_NAND_CE3_B_GPIO3_IO4		0x184	/* SODIMM 206 */
+		>;
+	};
+
+	pinctrl_gpio2: gpio2grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_SPDIF_EXT_CLK_GPIO5_IO5		0x1c4	/* SODIMM 208 */
 		>;
 	};
 
@@ -1054,14 +1064,22 @@
 	/* Verdin MEZ_DSI_1_BKL_EN */
 	pinctrl_mez_dsi_1_bkl_en: mezdsi1bklengrp {
 		fsl,pins = <
+			MX8MM_IOMUXC_SAI5_RXD3_GPIO3_IO24		0x184	/* SODIMM 46 */
+		>;
+	};
+
+	/* Verdin MEZ_DSI_1_GPIO_10 */
+	pinctrl_mez_dsi_1_gpio10: mezdsi1gpio10grp {
+		fsl,pins = <
 			MX8MM_IOMUXC_NAND_CE2_B_GPIO3_IO3		0x1c4	/* SODIMM 21 */
 		>;
 	};
 
 	/* Verdin MEZ_DSI_1_INT HPD (pulled-down as active-high) */
-	pinctrl_mez_dsi_1_int_hpd: mezdsi1inthpdgrp {
+	pinctrl_mez_dsi_1_hpd: mezdsi1hpdgrp {
 		fsl,pins = <
-			MX8MM_IOMUXC_NAND_RE_B_GPIO3_IO15		0x184	/* SODIMM 17 */
+			MX8MM_IOMUXC_GPIO1_IO01_GPIO1_IO1		0x184	/* SODIMM 19 */
+
 		>;
 	};
 
@@ -1072,16 +1090,9 @@
 		>;
 	};
 
-	/* MEZ_GPIO_1 shared with MEZ_DSI_1_INT on Verdin DSI to HDMI Display Adapter */
-	pinctrl_mez_gpio1: mezgpio1grp {
+	pinctrl_mez_touchreset: meztouchresetgrp {
 		fsl,pins = <
-			MX8MM_IOMUXC_NAND_CE3_B_GPIO3_IO4		0x184	/* SODIMM 206 */
-		>;
-	};
-
-	pinctrl_mez_gpio2: mezgpio2grp {
-		fsl,pins = <
-			MX8MM_IOMUXC_SPDIF_EXT_CLK_GPIO5_IO5		0x1c4	/* SODIMM 208 */
+			MX8MM_IOMUXC_SAI5_RXD2_GPIO3_IO23		0x184	/* SODIMM 42 */
 		>;
 	};
 
