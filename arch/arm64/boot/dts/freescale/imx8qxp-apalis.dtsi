@@ -440,6 +440,8 @@
 		reg = <0x20>;
 		gpio-controller;
 		#gpio-cells = <2>;
+		interrupt-controller;
+		#interrupt-cells = <2>;
 		interrupt-parent = <&lsio_gpio4>;
 		interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
 		vcc-supply = <&reg_module_3v3>;
