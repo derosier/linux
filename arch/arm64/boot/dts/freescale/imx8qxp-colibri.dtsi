@@ -15,7 +15,11 @@
 		compatible = "pwm-backlight";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpio_bl_on>;
+		brightness-levels = <0 45 63 88 119 158 203 255>;
+		default-brightness-level = <4>;
 		enable-gpios = <&lsio_gpio3 12 GPIO_ACTIVE_HIGH>; /* Colibri BL_ON */
+		power-supply = <&reg_module_3v3>;
+		pwms = <&adma_pwm 0 6666667 PWM_POLARITY_INVERTED>;
 		status = "disabled";
 	};
 
@@ -27,8 +31,6 @@
 	/* Colibri Parallel RGB */
 	display_lcdif: display@disp1 {
                 compatible = "fsl,imx-lcdif-mux-display";
-                #address-cells = <1>;
-                #size-cells = <0>;
                 pinctrl-names = "default";
                 pinctrl-0 = <&pinctrl_lcdif>;
                 clocks = <&clk IMX_SC_R_LCD_0 IMX_SC_PM_CLK_BYPASS>,
@@ -41,6 +43,9 @@
                 power-domains = <&pd IMX_SC_R_LCD_0>;
 		status = "disabled";
 
+                #address-cells = <1>;
+                #size-cells = <0>;
+
                 port@0 {
                         reg = <0>;
 
@@ -48,7 +53,29 @@
                                 remote-endpoint = <&dpu_disp1_lcdif>;
                         };
                 };
-        };
+
+		port@1 {
+			reg = <1>;
+
+			lcd_display_out: endpoint {
+				remote-endpoint = <&lcd_panel_in>;
+			};
+		};
+	};
+
+	panel_dpi: panel-dpi {
+		compatible = "panel-dpi";
+		backlight = <&backlight>;
+		data-mapping = "bgr666";
+		power-supply = <&reg_module_3v3>;
+		status = "disabled";
+
+		port {
+			lcd_panel_in: endpoint {
+				remote-endpoint = <&lcd_display_out>;
+			};
+		};
+	};
 
 	pcie_refclk: pcie-clock-generator {
 		compatible = "fixed-clock";
