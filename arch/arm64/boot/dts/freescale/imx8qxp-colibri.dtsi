@@ -438,11 +438,52 @@
 
 /* MIPI DSI accessible on FFC (X2) */
 &i2c0_mipi_lvds0 {
-	#address-cells = <1>;
-	#size-cells = <0>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_i2c0_mipi_lvds0>;
 	clock-frequency = <100000>;
+	status = "disabled";
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	/* DSI to HDMI Adapter V1.1A */
+	pca9540_switch: i2c-switch@70 {
+		compatible = "nxp,pca9540";
+		reg = <0x70>;
+		i2c-mux-idle-disconnect;
+		status = "disabled";
+
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		/* DDC/EDID */
+		i2c_sw0: i2c-sw@0 {
+			reg = <0>;
+		};
+
+		/* DSI-HDMI converter */
+		i2c-sw@1 {
+			reg = <1>;
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			lt8912_hdmi: dsihdmi@48 {
+				compatible = "lontium,lt8912";
+				ddc-i2c-bus = <&i2c_sw0>;
+				hpd-gpios = <&lsio_gpio1 31 GPIO_ACTIVE_HIGH>;
+				pinctrl-names = "default";
+				pinctrl-0 = <&pinctrl_gpio_hpd>;
+				reg = <0x48>;
+
+				port {
+					lt8912_in: endpoint {
+						remote-endpoint = <&mipi0_dsi_host_out>;
+					};
+				};
+			};
+		};
+	};
 };
 
 /* On-module MIPI CSI I2C accessible on FFC (X3) */
@@ -477,7 +518,7 @@
 		pinctrl_ad7879_int: ad7879-int {
 			fsl,pins = <
 				IMX8QXP_MIPI_CSI0_I2C0_SCL_LSIO_GPIO3_IO05      0x21
-			>
+			>;
 		};
 
 		/* Colibri Analogue Inputs */
@@ -584,6 +625,13 @@
 		pinctrl_gpio_bl_on: gpio-bl-on {
 			fsl,pins = <
 				IMX8QXP_QSPI0A_DATA3_LSIO_GPIO3_IO12		0x60		/* SODIMM  71 */
+			>;
+		};
+
+		/* HDMI Hot Plug Detect on FFC (X2) */
+		pinctrl_gpio_hpd: gpio-hpd {
+			fsl,pins = <
+				IMX8QXP_MIPI_DSI1_GPIO0_00_LSIO_GPIO1_IO31      0x20		/* SODIMM 138 */
 			>;
 		};
 
@@ -1170,6 +1218,17 @@
 
 &mipi0_dsi_host {
         pwr-delay = <10>;
+
+	ports {
+		port@1 {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			mipi0_dsi_host_out: endpoint@0 {
+				reg = <0>;
+				remote-endpoint = <&lt8912_in>;
+		        };
+		};
+	};
 };
 
 &mipi1_dsi_host {
