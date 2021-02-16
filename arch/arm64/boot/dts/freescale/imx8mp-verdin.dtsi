@@ -550,7 +550,7 @@
 		status = "disabled";
 	};
 
-	atmel_maxtouch: touch@4a {
+	atmel_mxt_ts: touch@4a {
 		compatible = "atmel,maxtouch";
 		/* Verdin MEZ_DSI_1_INT# (SODIMM 17) */
 		interrupt-parent = <&gpio4>;
