@@ -100,21 +100,16 @@
 	scl-gpios = <&gpio1 28 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	status = "okay";
 
-	/* Atmel maxtouch controller */
-	atmel_mxt_ts: atmel_mxt_ts@4a {
-		compatible = "atmel,maxtouch";
-		reg = <0x4a>;
-		interrupt-parent = <&gpio5>;
-		interrupts = <4 IRQ_TYPE_EDGE_FALLING>; /* SODIMM 107 */
-		reset-gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>; /* SODIMM 106 */
-		status = "okay";
-	};
-
 	/* M41T0M6 real time clock on carrier board */
 	rtc: m41t0m6@68 {
 		compatible = "st,m41t0";
 		reg = <0x68>;
 	};
+};
+
+/* ATMEL TS connector */
+&atmel_mxt_ts {
+	status = "okay";
 };
 
 /* PWM <A> */

@@ -76,18 +76,6 @@
 	scl-gpios = <&gpio1 28 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	status = "okay";
 
-	/* Atmel maxtouch controller */
-	atmel_mxt_ts: atmel_mxt_ts@4a {
-		compatible = "atmel,maxtouch";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_gpiotouch>;
-		reg = <0x4a>;
-		interrupt-parent = <&gpio5>;
-		interrupts = <4 IRQ_TYPE_EDGE_FALLING>; /* SODIMM 107 */
-		reset-gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>; /* SODIMM 106 */
-		status = "okay";
-	};
-
 	/* M41T0M6 real time clock on carrier board */
 	rtc: m41t0m6@68 {
 		compatible = "st,m41t0";
@@ -95,10 +83,24 @@
 	};
 };
 
+/* Atmel TS adapter */
+&atmel_mxt_ts {
+	pinctrl-0 = <&pinctrl_atmel_adap>;
+	interrupt-parent = <&gpio4>;
+	interrupts = <16 IRQ_TYPE_EDGE_FALLING>;
+	reset-gpios = <&gpio2 5 GPIO_ACTIVE_HIGH>;
+	status = "disabled";
+};
+
 /* PWM <A> */
 &pwm4 {
 	status = "okay";
 };
+
+/*
+ * the PCAPs use SODIMM 28/30, also used for PWM<B>, PWM<C>, aka pwm5,
+ * pwm6. so if you enable one of the PCAP controllers disable the pwms
+ */
 
 /* PWM <B> */
 &pwm5 {
@@ -196,13 +198,3 @@
 	};
 };
 
-&iomuxc {
-	imx6ull-colibri {
-		pinctrl_gpiotouch: touchgpios {
-			fsl,pins = <
-				MX6UL_PAD_NAND_DQS__GPIO4_IO16		0x74
-				MX6UL_PAD_ENET1_TX_EN__GPIO2_IO05	0x14
-			>;
-		};
-	};
-};

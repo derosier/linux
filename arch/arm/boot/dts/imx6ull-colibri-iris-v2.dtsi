@@ -86,18 +86,6 @@
 	scl-gpios = <&gpio1 28 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	status = "okay";
 
-	/* Atmel maxtouch controller */
-	atmel_mxt_ts: atmel_mxt_ts@4a {
-		compatible = "atmel,maxtouch";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_gpiotouch>;
-		reg = <0x4a>;
-		interrupt-parent = <&gpio5>;
-		interrupts = <4 IRQ_TYPE_EDGE_FALLING>; /* SODIMM 107 */
-		reset-gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>; /* SODIMM 106 */
-		status = "okay";
-	};
-
 	/* M41T0M6 real time clock on carrier board */
 	rtc: m41t0m6@68 {
 		compatible = "st,m41t0";
@@ -112,18 +100,21 @@
 
 /* PWM <B> */
 &pwm5 {
-	/* Pin already used by atmel_mxt_ts touchscreen */
-	status = "disabled";
+	status = "okay";
 };
 
 /* PWM <C> */
 &pwm6 {
-	/* Pin already used by atmel_mxt_ts touchscreen */
-	status = "disabled";
+	status = "okay";
 };
 
 /* PWM <D> */
 &pwm7 {
+	status = "okay";
+};
+
+/* Atmel TS connector */
+&atmel_mxt_ts {
 	status = "okay";
 };
 
@@ -215,13 +206,3 @@
 	};
 };
 
-&iomuxc {
-	imx6ull-colibri {
-		pinctrl_gpiotouch: touchgpios {
-			fsl,pins = <
-				MX6UL_PAD_NAND_DQS__GPIO4_IO16		0x74
-				MX6UL_PAD_ENET1_TX_EN__GPIO2_IO05	0x14
-			>;
-		};
-	};
-};
