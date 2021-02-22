@@ -670,7 +670,7 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_atmel_adap>;
 		gpios = <&gpio1  9 GPIO_ACTIVE_HIGH /* SODIMM 28, Pen intr */
-			 &gpio2 10 GPIO_ACTIVE_HIGH /* SODIMM 30, Reset */
+			 &gpio2 10 GPIO_ACTIVE_LOW  /* SODIMM 30, Reset */
 			>;
 		status = "disabled";
 	};
