@@ -40,7 +40,7 @@
 		};
 	};
 
-	sound-hdmi {
+	sound_hdmi: sound-hdmi {
 		compatible = "fsl,imx-audio-cdnhdmi";
 		model = "audio-hdmi";
 		audio-cpu = <&aud2htx>;
@@ -52,12 +52,8 @@
 				<48000>,
 				<96000>,
 				<192000>;
-		status = "okay";
+		status = "disabled";
 	};
-};
-
-&aud2htx {
-	status = "okay";
 };
 
 &fec {
@@ -65,34 +61,6 @@
 };
 
 &gpio_expander_21 {
-	status = "okay";
-};
-
-&gpu_2d {
-	status = "okay";
-};
-
-&gpu_3d {
-	status = "okay";
-};
-
-&hdmi {
-	status = "okay";
-};
-
-&hdmimix_clk {
-	status = "okay";
-};
-
-&hdmimix_reset {
-	status = "okay";
-};
-
-&hdmiphy {
-	status = "okay";
-};
-
-&hdmi_pavi {
 	status = "okay";
 };
 
@@ -104,23 +72,6 @@
 		#sound-dai-cells = <0>;
 		reg = <0x1a>;
 	};
-};
-
-&irqsteer_hdmi {
-	status = "okay";
-};
-
-/* LCDIF to on-SoC Samsung HDMI PHY */
-&lcdif3 {
-	status = "okay";
-};
-
-&mix_gpu_ml {
-	status = "okay";
-};
-
-&ml_vipsi {
-	status = "okay";
 };
 
 &wm8904_1a {
