@@ -17,6 +17,11 @@
 		status = "okay";
 	};
 
+	m4_tcm: tcml@007f8000 {
+		compatible = "fsl, m4_tcml";
+		reg = <0x007f8000 0x8000>;
+	};
+
 	pxp_v4l2_out {
 		compatible = "fsl,imx7d-pxp-v4l2", "fsl,imx6sx-pxp-v4l2", \
 		             "fsl,imx6sl-pxp-v4l2";
@@ -37,6 +42,22 @@
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
 		regulator-always-on;
+	};
+
+	reserved-memory {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		m4_reserved: m4@0x9ff00000 {
+			no-map;
+			reg = <0x9ff00000 0x100000>;
+		};
+
+		rpmsg_reserved: rpmsg@0x8ff00000 {
+			no-map;
+			reg = <0x8ff00000 0x100000>;
+		};
 	};
 
 	sound {
