@@ -18,6 +18,7 @@
 			"Headphone Jack", "MICBIAS",
 			"IN1L", "Headphone Jack";
 		simple-audio-card,widgets =
+			"Microphone", "Headphone Jack",
 			"Headphone", "Headphone Jack",
 			"Line", "Line In Jack";
 
