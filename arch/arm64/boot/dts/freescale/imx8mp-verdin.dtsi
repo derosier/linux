@@ -24,7 +24,7 @@
 		/* Verdin I2S_2_D_OUT (DSI_1_BKL_EN/DSI_1_BKL_EN_LVDS, SODIMM 46) */
 		enable-gpios = <&gpio5 1 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_mez_dsi_1_bkl_en>;
+		pinctrl-0 = <&pinctrl_i2s_2_d_out_dsi_1_bkl_en>;
 		power-supply = <&reg_3p3v>;
 		/* Verdin PWM_3_DSI/PWM_3_DSI_LVDS (SODIMM 19) */
 		pwms = <&pwm3 0 6666667 PWM_POLARITY_INVERTED>;
@@ -486,7 +486,7 @@
 		/* Verdin GPIO_10_DSI (SODIMM 21) */
 		enable-gpios = <&gpio4 28 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_mez_dsi_1_gpio10>, <&pinctrl_mez_dsi_1_int_n>;
+		pinctrl-0 = <&pinctrl_gpio_10_dsi>;
 		reg = <0x2c>;
 		status = "disabled";
 	};
@@ -505,7 +505,7 @@
 		/* Verdin PWM_3_DSI (SODIMM 19) */
 		hpd-gpios = <&gpio3 20 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_mez_dsi_1_hpd>, <&pinctrl_mez_dsi_1_gpio10>;
+		pinctrl-0 = <&pinctrl_gpio_10_dsi>, <&pinctrl_pwm_3_dsi_hpd_gpio>;
 		reg = <0x48>;
 		/* Verdin GPIO_9_DSI (LT8912 INT, SODIMM 17, unused) */
 		/* Verdin GPIO_10_DSI (SODIMM 21) */
@@ -519,7 +519,7 @@
 		interrupt-parent = <&gpio4>;
 		interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_mez_touchreset>;
+		pinctrl-0 = <&pinctrl_gpio_9_dsi>, <&pinctrl_i2s_2_bclk_touch_reset>;
 		reg = <0x4a>;
 		/* Verdin I2S_2_BCLK (TOUCH_RESET#, SODIMM 42) */
 		reset-gpios = <&gpio5 0 GPIO_ACTIVE_HIGH>;
@@ -899,6 +899,20 @@
 		>;
 	};
 
+	/* Verdin GPIO_9_DSI (pulled-up as active-low) */
+	pinctrl_gpio_9_dsi: gpio9dsigrp {
+		fsl,pins = <
+			MX8MP_IOMUXC_SAI2_TXC__GPIO4_IO25		0x1c4	/* SODIMM 17 */
+		>;
+	};
+
+	/* Verdin GPIO_10_DSI */
+	pinctrl_gpio_10_dsi: gpio10dsigrp {
+		fsl,pins = <
+			MX8MP_IOMUXC_SAI3_RXFS__GPIO4_IO28		0x1c4	/* SODIMM 21 */
+		>;
+	};
+
 	pinctrl_gpio_hog1: gpiohog1grp {
 		fsl,pins = <
 			MX8MP_IOMUXC_ECSPI2_MISO__GPIO5_IO12		0x1c4	/* SODIMM 116 */
@@ -996,38 +1010,17 @@
 		>;
 	};
 
-	/* Verdin I2S_2_D_OUT shared with SAI3 */
-	pinctrl_mez_dsi_1_bkl_en: mezdsi1bklengrp {
-		fsl,pins = <
-			MX8MP_IOMUXC_SAI3_TXD__GPIO5_IO01		0x184	/* SODIMM 46 */
-		>;
-	};
-
-	/* Verdin GPIO_10_DSI */
-	pinctrl_mez_dsi_1_gpio10: mezdsi1gpio10grp {
-		fsl,pins = <
-			MX8MP_IOMUXC_SAI3_RXFS__GPIO4_IO28		0x1c4	/* SODIMM 21 */
-		>;
-	};
-
-	/* Verdin PWM_3_DSI (pulled-down as active-high) shared with PWM3_OUT */
-	pinctrl_mez_dsi_1_hpd: mezdsi1hpdgrp {
-		fsl,pins = <
-			MX8MP_IOMUXC_SAI5_RXC__GPIO3_IO20		0x184	/* SODIMM 19 */
-		>;
-	};
-
-	/* Verdin GPIO_9_DSI (pulled-up as active-low) */
-	pinctrl_mez_dsi_1_int_n: mezdsi1intngrp {
-		fsl,pins = <
-			MX8MP_IOMUXC_SAI2_TXC__GPIO4_IO25		0x1c4	/* SODIMM 17 */
-		>;
-	};
-
 	/* Verdin I2S_2_BCLK (TOUCH_RESET#) */
-	pinctrl_mez_touchreset: meztouchresetgrp {
+	pinctrl_i2s_2_bclk_touch_reset: i2s2bclktouchresetgrp {
 		fsl,pins = <
 			MX8MP_IOMUXC_SAI3_TXC__GPIO5_IO00		0x184	/* SODIMM 42 */
+		>;
+	};
+
+	/* Verdin I2S_2_D_OUT shared with SAI3 */
+	pinctrl_i2s_2_d_out_dsi_1_bkl_en: i2s2doutdsi1bklengrp {
+		fsl,pins = <
+			MX8MP_IOMUXC_SAI3_TXD__GPIO5_IO01		0x184	/* SODIMM 46 */
 		>;
 	};
 
@@ -1060,6 +1053,13 @@
 	pinctrl_pwm_3: pwm3grp {
 		fsl,pins = <
 			MX8MP_IOMUXC_SAI5_RXC__PWM3_OUT			0x6	/* SODIMM 19 */
+		>;
+	};
+
+	/* Verdin PWM_3_DSI (pulled-down as active-high) shared with PWM3_OUT */
+	pinctrl_pwm_3_dsi_hpd_gpio: pwm3dsi1hpdgpiogrp {
+		fsl,pins = <
+			MX8MP_IOMUXC_SAI5_RXC__GPIO3_IO20		0x184	/* SODIMM 19 */
 		>;
 	};
 
