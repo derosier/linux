@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+ OR MIT
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
 /*
  * Copyright 2019-2021 Toradex
  */
@@ -21,12 +21,12 @@
 		compatible = "pwm-backlight";
 		brightness-levels = <0 45 63 88 119 158 203 255>;
 		default-brightness-level = <4>;
-		/*  Verdin MEZ_DSI_1_BKL_EN (SODIMM 46) */
+		/* Verdin I2S_2_D_OUT (DSI_1_BKL_EN/DSI_1_BKL_EN_LVDS, SODIMM 46) */
 		enable-gpios = <&gpio3 24 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_mez_dsi_1_bkl_en>;
 		power-supply = <&reg_3p3v>;
-		/* Verdin MEZ_PWM_3_DSI (SODIMM 19) */
+		/* Verdin PWM_3_DSI/PWM_3_DSI_LVDS (SODIMM 19) */
 		pwms = <&pwm1 0 6666667 PWM_POLARITY_INVERTED>;
 		status = "disabled";
 	};
@@ -45,6 +45,7 @@
 
 		wakeup {
 			debounce-interval = <10>;
+			/* Verdin CTRL_WAKE1_MICO# (SODIMM 252) */
 			gpios = <&gpio4 28 GPIO_ACTIVE_LOW>;
 			label = "Wake-Up";
 			linux,code = <KEY_WAKEUP>;
@@ -77,7 +78,7 @@
 	reg_ethphy: regulator-ethphy {
 		compatible = "regulator-fixed";
 		enable-active-high;
-		gpio = <&gpio2 20 GPIO_ACTIVE_HIGH>;
+		gpio = <&gpio2 20 GPIO_ACTIVE_HIGH>; /* PMIC_EN_ETH */
 		off-on-delay = <500000>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_reg_eth>;
@@ -103,7 +104,7 @@
 	reg_usb_otg2_vbus: regulator-usb-otg2 {
 		compatible = "regulator-fixed";
 		enable-active-high;
-		/* Verdin USB2_EN */
+		/* Verdin USB_2_EN (SODIMM 185) */
 		gpio = <&gpio1 14 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_reg_usb2_en>;
@@ -115,6 +116,7 @@
 	reg_usdhc2_vmmc: regulator-usdhc2 {
 		compatible = "regulator-fixed";
 		enable-active-high;
+		/* Verdin SD_1_PWR_EN (SODIMM 76) */
 		gpio = <&gpio3 5 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_usdhc2_pwr_en>;
@@ -135,7 +137,6 @@
 			reg = <0 0xb8000000 0 0x400000>;
 		};
 	};
-
 };
 
 &A53_0 {
@@ -151,7 +152,7 @@
 	cs-gpios = <&gpio5 13 GPIO_ACTIVE_LOW>;
 };
 
-/* On-module CAN controller 1 & 2 */
+/* Verdin CAN_1 and CAN_2 (on-module) */
 &ecspi3 {
 	#address-cells = <1>;
 	#size-cells = <0>;
@@ -192,6 +193,7 @@
 	};
 };
 
+/* Verdin ETH_1 (on-module PHY) */
 &fec1 {
 	fsl,magic-packet;
 	phy-handle = <&ethphy0>;
@@ -306,6 +308,7 @@
 
 	ctrl_sleep_moci {
 		gpio-hog;
+		/* Verdin CTRL_SLEEP_MOCI# (SODIMM 256) */
 		gpios = <1 GPIO_ACTIVE_HIGH>;
 		line-name = "CTRL_SLEEP_MOCI#";
 		output-high;
@@ -325,12 +328,12 @@
 	status = "okay";
 
 	pmic: pca9450@25 {
-		reg = <0x25>;
 		compatible = "nxp,pca9450";
-		/* PMIC PCA9450 PMIC_nINT GPIO1_IO3 */
-		pinctrl-0 = <&pinctrl_pmic>;
 		gpio_intr = <&gpio1 3 GPIO_ACTIVE_LOW>;
 		i2c-lt-en = <0x101>;
+		/* PMIC PCA9450 PMIC_nINT GPIO1_IO3 */
+		pinctrl-0 = <&pinctrl_pmic>;
+		reg = <0x25>;
 
 		regulators {
 			#address-cells = <1>;
@@ -518,10 +521,10 @@
 
 /* Verdin I2C_2_DSI */
 &i2c2 {
-       clock-frequency = <10000>;
-       pinctrl-names = "default";
-       pinctrl-0 = <&pinctrl_i2c2>;
-       status = "disabled";
+	clock-frequency = <10000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_i2c2>;
+	status = "disabled";
 };
 
 /* Verdin I2C_3_HDMI N/A */
@@ -556,6 +559,8 @@
 
 	lvds_ti_sn65dsi83: bridge@2c {
 		compatible = "ti,sn65dsi83";
+		/* Verdin GPIO_9_DSI (SN65DSI84 IRQ, SODIMM 17, unused) */
+		/* Verdin GPIO_10_DSI (SODIMM 21) */
 		enable-gpios = <&gpio3 3 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_mez_dsi_1_gpio10>, <&pinctrl_mez_dsi_1_int_n>;
@@ -601,23 +606,26 @@
 	hdmi_lontium_lt8912: hdmi@48 {
 		compatible = "lontium,lt8912";
 		ddc-i2c-bus = <&i2c2>;
-		/* Verdin MEZ_DSI_1_INT HPD (SODIMM 19) */
+		/* Verdin PWM_3_DSI (SODIMM 19) */
 		hpd-gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_mez_dsi_1_gpio10>, <&pinctrl_mez_dsi_1_hpd>;
 		reg = <0x48>;
+		/* Verdin GPIO_9_DSI (LT8912 INT, SODIMM 17, unused) */
+		/* Verdin GPIO_10_DSI (SODIMM 21) */
 		reset-gpios = <&gpio3 3 GPIO_ACTIVE_LOW>;
 		status = "disabled";
 	};
 
 	atmel_mxt_ts: touch@4a {
 		compatible = "atmel,maxtouch";
-		/* Verdin MEZ_DSI_1_INT# (SODIMM 17) shared. Pinctrl by &lvds_ti_sn65dsi83 */
+		/* Verdin GPIO_9_DSI (TOUCH_INT#, SODIMM 17, also routed to SN65dsi83 IRQ albeit currently unused */
 		interrupt-parent = <&gpio3>;
 		interrupts = <15 IRQ_TYPE_EDGE_FALLING>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_mez_touchreset>;
 		reg = <0x4a>;
+		/* Verdin I2S_2_BCLK (TOUCH_RESET#, SODIMM 42) */
 		reset-gpios = <&gpio3 23 GPIO_ACTIVE_HIGH>;
 		status = "disabled";
 	};
@@ -666,14 +674,15 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie0>;
 	reserved-region = <&rpmsg_reserved>;
+	/* PCIE_1_RESET# (SODIMM 244) */
 	reset-gpio = <&gpio3 19 GPIO_ACTIVE_LOW>;
 };
 
 /* Verdin PWM_3_DSI */
 &pwm1 {
-	#pwm-cells = <3>;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm_1>;
+	#pwm-cells = <3>;
 };
 
 /* Verdin PWM_1 */
@@ -704,7 +713,7 @@
 	status = "okay";
 };
 
-/* Verdin UART_3 */
+/* Verdin UART_3, used as the Linux console */
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
@@ -744,13 +753,13 @@
 
 /* Verdin USB_1 */
 &usbotg1 {
-	adp-disable;
 	dr_mode = "otg";
 	hnp-disable;
+	srp-disable;
+	adp-disable;
 	over-current-active-low;
 	picophy,dc-vol-level-adjust = <7>;
 	picophy,pre-emp-curr-control = <3>;
-	srp-disable;
 	vbus-supply = <&reg_usb_otg1_vbus>;
 };
 
@@ -838,7 +847,7 @@
 
 	pinctrl_ctrl_sleep_moci: ctrlsleepmocigrp {
 		fsl,pins = <
-			MX8MM_IOMUXC_SAI3_TXD_GPIO5_IO1			0x1c4	/* CTRL_SLEEP_MOCI */
+			MX8MM_IOMUXC_SAI3_TXD_GPIO5_IO1			0x1c4	/* SODIMM 256 */
 		>;
 	};
 
@@ -853,11 +862,11 @@
 
 	pinctrl_ecspi3: ecspi3grp {
 		fsl,pins = <
-			MX8MM_IOMUXC_UART1_RXD_ECSPI3_SCLK		0x4
-			MX8MM_IOMUXC_UART1_TXD_ECSPI3_MOSI		0x4
-			MX8MM_IOMUXC_UART2_RXD_ECSPI3_MISO		0x1c4
-			MX8MM_IOMUXC_UART2_TXD_GPIO5_IO25		0x1c4
-			MX8MM_IOMUXC_GPIO1_IO05_GPIO1_IO5		0x1c4
+			MX8MM_IOMUXC_UART1_RXD_ECSPI3_SCLK		0x4	/* CAN_SPI_SCK_1.8V */
+			MX8MM_IOMUXC_UART1_TXD_ECSPI3_MOSI		0x4	/* CAN_SPI_MOSI_1.8V */
+			MX8MM_IOMUXC_UART2_RXD_ECSPI3_MISO		0x1c4	/* CAN_SPI_MISO_1.8V */
+			MX8MM_IOMUXC_UART2_TXD_GPIO5_IO25		0x1c4	/* CAN_1_SPI_CS_1.8V# */
+			MX8MM_IOMUXC_GPIO1_IO05_GPIO1_IO5		0x1c4	/* CAN_2_SPI_CS#_1.8V */
 		>;
 	};
 
@@ -1061,35 +1070,35 @@
 		>;
 	};
 
-	/* Verdin MEZ_DSI_1_BKL_EN */
+	/* Verdin I2S_2_D_OUT shared with SAI5 */
 	pinctrl_mez_dsi_1_bkl_en: mezdsi1bklengrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SAI5_RXD3_GPIO3_IO24		0x184	/* SODIMM 46 */
 		>;
 	};
 
-	/* Verdin MEZ_DSI_1_GPIO_10 */
+	/* Verdin GPIO_10_DSI */
 	pinctrl_mez_dsi_1_gpio10: mezdsi1gpio10grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_NAND_CE2_B_GPIO3_IO3		0x1c4	/* SODIMM 21 */
 		>;
 	};
 
-	/* Verdin MEZ_DSI_1_INT HPD (pulled-down as active-high) */
+	/* Verdin PWM_3_DSI (pulled-down as active-high) shared with PWM1_OUT */
 	pinctrl_mez_dsi_1_hpd: mezdsi1hpdgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO01_GPIO1_IO1		0x184	/* SODIMM 19 */
-
 		>;
 	};
 
-	/* Verdin MEZ_DSI_1_INT# (pulled-up as active-low) */
+	/* Verdin GPIO_9_DSI (pulled-up as active-low) */
 	pinctrl_mez_dsi_1_int_n: mezdsi1intngrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_NAND_RE_B_GPIO3_IO15		0x1c4	/* SODIMM 17 */
 		>;
 	};
 
+	/* Verdin I2S_2_BCLK (TOUCH_RESET#) */
 	pinctrl_mez_touchreset: meztouchresetgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SAI5_RXD2_GPIO3_IO23		0x184	/* SODIMM 42 */
@@ -1099,7 +1108,7 @@
 	pinctrl_pcie0: pcie0grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SAI5_RXFS_GPIO3_IO19		0x6	/* SODIMM 244 */
-			MX8MM_IOMUXC_SD2_RESET_B_GPIO2_IO19		0x6	/* PMIC_EN_PCIe_CLK */
+			MX8MM_IOMUXC_SD2_RESET_B_GPIO2_IO19		0x6	/* PMIC_EN_PCIe_CLK, unused */
 		>;
 	};
 
@@ -1109,6 +1118,7 @@
 		>;
 	};
 
+	/* Verdin PWM_3_DSI shared with GPIO1_IO1 */
 	pinctrl_pwm_1: pwm1grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO01_PWM1_OUT		0x6	/* SODIMM 19 */
@@ -1164,7 +1174,7 @@
 		>;
 	};
 
-	/* currently unused ctrl signal for SE050 or ATTPM20P */
+	/* control signal for optional ATTPM20P or SE050 */
 	pinctrl_pmic_tpm_ena: pmictpmenagrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SAI1_TXD7_GPIO4_IO19		0x1c4	/* PMIC_TPM_ENA */
@@ -1312,7 +1322,7 @@
 		>;
 	};
 
-	/* On-module Wi-Fi/BT or SDHC interface on the X52 extention slot */
+	/* On-module Wi-Fi/BT or type specific SDHC interface (e.g. on X52 extension slot of Verdin Development Board */
 	pinctrl_usdhc3: usdhc3grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_NAND_WE_B_USDHC3_CLK		0x190
@@ -1355,8 +1365,8 @@
 	pinctrl_wifi_ctrl: wifictrlgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_NAND_READY_B_GPIO3_IO16		0x1c4		/* WIFI_WKUP_BT */
-			MX8MM_IOMUXC_SAI5_RXC_GPIO3_IO20		0x1c4		/* WIFI_WKUP_WLAN */
 			MX8MM_IOMUXC_SAI1_RXD7_GPIO4_IO9		0x1c4		/* WIFI_W_WKUP_HOST */
+			MX8MM_IOMUXC_SAI5_RXC_GPIO3_IO20		0x1c4		/* WIFI_WKUP_WLAN */
 		>;
 	};
 
