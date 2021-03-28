@@ -146,14 +146,6 @@
 	};
 };
 
-&gpio7 {
-	lvds_tx_on {
-		gpio-hog;
-		gpios = <11 0>; /* SODIMM 99 */
-		output-high;
-	};
-};
-
 /* The define SD_1_8 allows to use the SD interface at a higher speed mode
  * if the card supports it. For this the signaling voltage is switched from
  * 3.3V to 1.8V under the usdhc1's drivers control.
