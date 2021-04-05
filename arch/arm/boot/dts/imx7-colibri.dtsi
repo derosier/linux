@@ -15,7 +15,7 @@
 		enable-gpios = <&gpio5 1 GPIO_ACTIVE_HIGH>;
 		power-supply = <&reg_module_3v3>;
 		pwms = <&pwm1 0 6666667 PWM_POLARITY_INVERTED>;
-		status = "okay";
+		status = "disabled";
 	};
 
 	m4_tcm: tcml@007f8000 {
@@ -371,7 +371,7 @@
 		adi,median-filter-size = /bits/ 8 <2>;
 		adi,averaging = /bits/ 8 <1>;
 		adi,conversion-interval = /bits/ 8 <255>;
-		status = "okay";
+		status = "disabled";
 	};
 
 	pmic@33 {
@@ -462,7 +462,7 @@
                 interrupt-parent = <&gpio2>;
                 interrupts = <15 IRQ_TYPE_EDGE_FALLING>;        /* SODIMM_107, INT */
                 reset-gpios = <&gpio2 28 GPIO_ACTIVE_HIGH>;     /* SODIMM_106, RST */
-                status = "okay";
+                status = "disabled";
         };
 
 
@@ -486,7 +486,7 @@
 	pinctrl-0 = <&pinctrl_lcdif_dat
 		     &pinctrl_lcdif_ctrl>;
 	display = <&display0>;
-	status = "okay";
+	status = "disabled";
 
 	display0: lcd-display {
 		bits-per-pixel = <16>;

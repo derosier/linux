@@ -92,13 +92,11 @@
 };
 
 &pwm2 {
-	/* The pwm2 pins are used by atmel_mxt_ts touchscreen. */
-	status = "disabled";
+	status = "okay";
 };
 
 &pwm3 {
-	/* The pwm3 pins are used by atmel_mxt_ts touchscreen. */
-	status = "disabled";
+	status = "okay";
 };
 
 &pwm4 {
