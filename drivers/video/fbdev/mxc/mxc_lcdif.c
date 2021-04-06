@@ -49,6 +49,12 @@ static struct fb_videomode lcdif_modedb[] = {
 	FB_SYNC_CLK_LAT_FALL,
 	FB_VMODE_NONINTERLACED,
 	0,},
+	{
+	/* 800x480 @ 60 Hz , pixel clk @ 32MHz, neg clk pol */
+	"EDT-WVGA", 60, 800, 480, 29850, 89, 164, 23, 10, 10, 10,
+	0,
+	FB_VMODE_NONINTERLACED,
+	0,},
 };
 static int lcdif_modedb_sz = ARRAY_SIZE(lcdif_modedb);
 
