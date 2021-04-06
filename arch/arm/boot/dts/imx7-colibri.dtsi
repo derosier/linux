@@ -598,6 +598,7 @@
 				hsync-len = <40>;
 				vsync-len = <6>;
 
+				de-active = <1>;
 				hsync-active = <0>;
 				vsync-active = <0>;
 				pixelclk-active = <0>;
