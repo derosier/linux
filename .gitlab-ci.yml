@@ -6,7 +6,16 @@ variables:
   DOCKER_TLS_CERTDIR: ""
 
 stages:
+  - check-patch
   - build-kernel
+
+check_patch:
+  stage: check-patch
+  image: gitlab.int.toradex.com:4567/rd/linux-bsp/ci-toolchain-container:linux-toradex_aarch32_arm_builder-bb6f84e
+  script: .gitlab-ci.d/check-patch.py
+  variables:
+    GIT_DEPTH: 1000
+  allow_failure: true
 
 32-bit-kernel:
   stage: build-kernel
