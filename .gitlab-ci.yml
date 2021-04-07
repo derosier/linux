@@ -1,7 +1,6 @@
 variables:
 # uncomment for the pipeline debug purpose
 # CI_DEBUG_TRACE: "true"
-  CI_IMAGE: gitlab.int.toradex.com:4567/oleksandr.suvorov/ci-toolchain-container:linux-kernel-builder
   DOCKER_HOST: tcp://docker:2375
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
@@ -9,9 +8,9 @@ variables:
 stages:
   - build-kernel
 
-build_kernel:
+32-bit-kernel:
   stage: build-kernel
-  image: $CI_IMAGE
+  image: gitlab.int.toradex.com:4567/rd/linux-bsp/ci-toolchain-container:linux-toradex_aarch32_arm_builder-bb6f84e
   variables:
     GIT_STRATEGY: fetch
     GIT_DEPTH: "1"
@@ -23,19 +22,26 @@ build_kernel:
     echo "Current directory: ${PWD}"
     THREADS=$(grep processor /proc/cpuinfo -c)
     echo "building with $THREADS parallel threads"
-    cd $CI_PROJECT_DIR
     DEVICETREES=$(find arch/arm/boot/dts/ -regextype posix-extended -regex "^.*\/imx.*(apalis|colibri|verdin).*\.dts" | sed 's/arch\/arm\/boot\/dts\///' | sed 's/\.dts/\.dtb/')
     make imx_v6_v7_defconfig
     echo -e "building: \n$DEVICETREES"
     make -j$THREADS $DEVICETREES
     make -j$THREADS
     make mrproper
-    source /select_64bit_toolchain.sh
+
+64-bit-kernel:
+  stage: build-kernel
+  image: gitlab.int.toradex.com:4567/rd/linux-bsp/ci-toolchain-container:linux-toradex_aarch64_arm_builder-bb6f84e
+  variables:
+    GIT_STRATEGY: fetch
+    GIT_DEPTH: "1"
+  script: |
     echo "GCC used to build binaries is"
     which ${CROSS_COMPILE}gcc
     ${CROSS_COMPILE}gcc --version
     echo -e "Arch is \e[36m$ARCH\e[39m"
     echo "Current directory: ${PWD}"
+    THREADS=$(grep processor /proc/cpuinfo -c)
     echo "building with $THREADS parallel threads"
     DEVICETREES=$(find arch/arm64/boot/dts/ -regextype posix-extended -regex "^.*\/fsl.*(apalis|colibri|verdin).*\.dts" | sed 's/arch\/arm64\/boot\/dts\///' | sed 's/\.dts/\.dtb/')
     make defconfig
