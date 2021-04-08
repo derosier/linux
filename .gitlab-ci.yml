@@ -36,7 +36,66 @@ check_patch:
     echo -e "building: \n$DEVICETREES"
     make -j$THREADS $DEVICETREES
     make -j$THREADS
-    make mrproper
+
+colibri-imx6ull-kernel:
+  stage: build-kernel
+  image: gitlab.int.toradex.com:4567/rd/linux-bsp/ci-toolchain-container:linux-toradex_aarch32_arm_builder-bb6f84e
+  variables:
+    DEFCONFIG: colibri-imx6ull_defconfig
+    GIT_STRATEGY: fetch
+    GIT_DEPTH: "1"
+    # Choose max kernel size that `ubinfo /dev/ubi0_0` reports
+    MAX_KERNEL_SIZE_B: 8507392
+  script: |
+    echo "GCC used to build binaries is"
+    which ${CROSS_COMPILE}gcc
+    ${CROSS_COMPILE}gcc --version
+    echo -e "Arch is \e[36m$ARCH\e[39m"
+    echo "Current directory: ${PWD}"
+    THREADS=$(grep processor /proc/cpuinfo -c)
+    echo "building with $THREADS parallel threads"
+    DEVICETREES=$(find arch/arm/boot/dts/ -regextype posix-extended -regex "^.*\/imx.*(apalis|colibri|verdin).*\.dts" | sed 's/arch\/arm\/boot\/dts\///' | sed 's/\.dts/\.dtb/')
+    make $DEFCONFIG
+    echo -e "building: \n$DEVICETREES"
+    make -j$THREADS $DEVICETREES
+    make -j$THREADS
+    KERNEL_SIZE=$(ls -la arch/arm/boot/zImage | awk '{print $5}')
+    echo "Kernel size is ${KERNEL_SIZE} bytes"
+    if [ $KERNEL_SIZE -ge $MAX_KERNEL_SIZE_B ];
+    then
+      echo "❌ Kernel exceeds the max size of ${MAX_KERNEL_SIZE_B}, failing CI pipeline";
+      exit 1
+    fi
+
+colibri-imx7-kernel:
+  stage: build-kernel
+  image: gitlab.int.toradex.com:4567/rd/linux-bsp/ci-toolchain-container:linux-toradex_aarch32_arm_builder-bb6f84e
+  variables:
+    DEFCONFIG: colibri_imx7_defconfig
+    GIT_STRATEGY: fetch
+    GIT_DEPTH: "1"
+    # Choose max kernel size that `ubinfo /dev/ubi0_0` reports
+    MAX_KERNEL_SIZE_B: 8507392
+  script: |
+    echo "GCC used to build binaries is"
+    which ${CROSS_COMPILE}gcc
+    ${CROSS_COMPILE}gcc --version
+    echo -e "Arch is \e[36m$ARCH\e[39m"
+    echo "Current directory: ${PWD}"
+    THREADS=$(grep processor /proc/cpuinfo -c)
+    echo "building with $THREADS parallel threads"
+    DEVICETREES=$(find arch/arm/boot/dts/ -regextype posix-extended -regex "^.*\/imx.*(apalis|colibri|verdin).*\.dts" | sed 's/arch\/arm\/boot\/dts\///' | sed 's/\.dts/\.dtb/')
+    make $DEFCONFIG
+    echo -e "building: \n$DEVICETREES"
+    make -j$THREADS $DEVICETREES
+    make -j$THREADS
+    KERNEL_SIZE=$(ls -la arch/arm/boot/zImage | awk '{print $5}')
+    echo "Kernel size is ${KERNEL_SIZE} bytes"
+    if [ $KERNEL_SIZE -ge $MAX_KERNEL_SIZE_B ];
+    then
+      echo "❌ Kernel exceeds the max size of ${MAX_KERNEL_SIZE_B}, failing CI pipeline";
+      exit 1
+    fi
 
 64-bit-kernel:
   stage: build-kernel
