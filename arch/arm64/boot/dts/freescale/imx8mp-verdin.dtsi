@@ -720,6 +720,8 @@
 	pinctrl-2 = <&pinctrl_usdhc3_200mhz>;
 	pm-ignore-notify;
 	status = "okay";
+	vqmmc-supply = <&buck5_reg>;
+	vmmc-supply = <&buck4_reg>;
 };
 
 &vpu_g1 {
