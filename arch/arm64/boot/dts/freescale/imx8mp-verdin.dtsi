@@ -166,8 +166,8 @@
 
 		ethphy0: ethernet-phy@7 {
 			compatible = "ethernet-phy-ieee802.3-c22";
-//			interrupt-parent = <&gpio1>;
-//			interrupts = <10 IRQ_TYPE_LEVEL_LOW>;
+			interrupt-parent = <&gpio1>;
+			interrupts = <10 IRQ_TYPE_LEVEL_LOW>;
 			micrel,led-mode = <0>;
 			reg = <7>;
 		};
@@ -189,8 +189,8 @@
 
 		ethphy1: ethernet-phy@7 {
 			compatible = "ethernet-phy-ieee802.3-c22";
-//			interrupt-parent = <&gpio4>;
-//			interrupts = <18 IRQ_TYPE_LEVEL_LOW>;
+			interrupt-parent = <&gpio4>;
+			interrupts = <18 IRQ_TYPE_LEVEL_LOW>;
 			micrel,led-mode = <0>;
 			reg = <7>;
 		};
