@@ -299,19 +299,21 @@
 			buck4_reg: regulator@3 {
 				reg = <3>;
 				regulator-compatible = "buck4";
-				regulator-min-microvolt = <600000>;
-				regulator-max-microvolt = <3400000>;
+				regulator-min-microvolt = <3300000>;
+				regulator-max-microvolt = <3300000>;
 				regulator-boot-on;
 				regulator-always-on;
+				regulator-name = "On-module +V3.3 (buck4)";
 			};
 
 			buck5_reg: regulator@4 {
 				reg = <4>;
 				regulator-compatible = "buck5";
-				regulator-min-microvolt = <600000>;
-				regulator-max-microvolt = <3400000>;
+				regulator-min-microvolt = <1800000>;
+				regulator-max-microvolt = <1800000>;
 				regulator-boot-on;
 				regulator-always-on;
+				regulator-name = "On-module +V1.8 (buck5)";
 			};
 
 			buck6_reg: regulator@5 {
