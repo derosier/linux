@@ -273,6 +273,12 @@
 	vref-supply = <&reg_module_vref_1v8>;
 };
 
+&adma_lcdif {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_lcdif>;
+	status = "disabled";
+};
+
 /* Display Prefetch Resolve, (Tiling) */
 &dc0_dpr1_channel1 {
 	status = "okay";
