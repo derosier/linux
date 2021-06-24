@@ -917,8 +917,22 @@ static long samsung_hdmi_phy_clk_round_rate(struct clk_hw *hw,
 		if (phy_cfg->clk_rate == rate)
 			break;
 
-	if (phy_cfg->clk_rate == 0)
-		return -EINVAL;
+	if (phy_cfg->clk_rate == 0) {
+		/* If no exact setting found, try to find a close one */
+		phy_cfg = samsung_phy_pll_cfg;
+		phy_cfg++;
+		for (; phy_cfg->clk_rate != 0; phy_cfg++)
+			if (phy_cfg->clk_rate > rate)
+				break;
+
+		/* Bail out, no suitable setting found */
+		if (phy_cfg->clk_rate == 0)
+			return -EINVAL;
+
+		/* Use the next lower rate if that is closer to the wanted one */
+		if ((phy_cfg->clk_rate - rate) > (rate - (phy_cfg-1)->clk_rate))
+			phy_cfg--;
+	}
 
 	return phy_cfg->clk_rate;
 }

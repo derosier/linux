@@ -212,11 +212,16 @@ imx6dl_hdmi_mode_valid(struct drm_connector *con,
 
 static bool imx8mp_hdmi_check_clk_rate(int rate_khz)
 {
-	int rate = rate_khz * 1000;
+	int rate;
 
 	/* Check hdmi phy pixel clock support rate */
-	if (rate != clk_round_rate(imx8mp_clocks[0].clk, rate))
+	rate = clk_round_rate(imx8mp_clocks[0].clk, rate_khz * 1000);
+	/* Drop mode if pixelclk generated is more than 6% off */
+	if ((rate < rate_khz * 940) || (rate > rate_khz * 1060)) {
+		pr_info("%s: mode with pixelclk %i kHz dropped\n",
+			__func__, rate_khz);
 		return  false;
+	}
 	return true;
 }
 
