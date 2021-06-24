@@ -59,6 +59,7 @@
 /* Default value */
 #define IMX_I2C_BIT_RATE	100000	/* 100kHz */
 #define IMX_I2C_MAX_E_BIT_RATE	384000	/* 384kHz from e7805 errata*/
+#define IMX_I2C_MAX_RETRIES	3	/* Retries on arbitration loss */
 
 /*
  * Enable DMA if transfer byte size is bigger than this threshold.
@@ -1592,6 +1593,7 @@ static int i2c_imx_probe(struct platform_device *pdev)
 	i2c_imx->adapter.dev.parent	= &pdev->dev;
 	i2c_imx->adapter.nr		= pdev->id;
 	i2c_imx->adapter.dev.of_node	= pdev->dev.of_node;
+	i2c_imx->adapter.retries	= IMX_I2C_MAX_RETRIES;
 	i2c_imx->base			= base;
 	ACPI_COMPANION_SET(&i2c_imx->adapter.dev, ACPI_COMPANION(&pdev->dev));
 
