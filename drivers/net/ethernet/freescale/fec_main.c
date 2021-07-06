@@ -4058,6 +4058,8 @@ static int __maybe_unused fec_suspend(struct device *dev)
 		if (fep->wol_flag & FEC_WOL_FLAG_ENABLE)
 			fep->wol_flag |= FEC_WOL_FLAG_SLEEP_ON;
 		phy_stop(ndev->phydev);
+		if (fep->reg_phy)
+			disable_irq(ndev->phydev->irq);
 		napi_disable(&fep->napi);
 		netif_tx_lock_bh(ndev);
 		netif_device_detach(ndev);
@@ -4065,8 +4067,6 @@ static int __maybe_unused fec_suspend(struct device *dev)
 		fec_stop(ndev);
 		if (!(fep->wol_flag & FEC_WOL_FLAG_ENABLE)) {
 			fec_irqs_disable(ndev);
-			if (fep->reg_phy)
-				disable_irq(ndev->phydev->irq);
 			pinctrl_pm_select_sleep_state(&fep->pdev->dev);
 		} else {
 			fec_enet_enter_stop_mode(fep);
@@ -4135,10 +4135,8 @@ static int __maybe_unused fec_resume(struct device *dev)
 			fep->wol_flag &= ~FEC_WOL_FLAG_SLEEP_ON;
 		} else {
 			pinctrl_pm_select_default_state(&fep->pdev->dev);
-			if (fep->reg_phy) {
-				phy_init_hw(ndev->phydev);
+			if (fep->reg_phy)
 				enable_irq(ndev->phydev->irq);
-			}
 		}
 		fec_restart(ndev);
 		netif_tx_lock_bh(ndev);
