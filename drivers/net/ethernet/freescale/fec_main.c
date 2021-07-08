@@ -4086,8 +4086,10 @@ static int __maybe_unused fec_suspend(struct device *dev)
 	}
 	rtnl_unlock();
 
-	if (fep->reg_phy && !(fep->wol_flag & FEC_WOL_FLAG_ENABLE))
+	if (fep->reg_phy && !(fep->wol_flag & FEC_WOL_FLAG_ENABLE)) {
+		disable_irq(ndev->phydev->irq);
 		regulator_disable(fep->reg_phy);
+	}
 
 	/* SOC supply clock to phy, when clock is disabled, phy link down
 	 * SOC control phy regulator, when regulator is disabled, phy link down
@@ -4109,6 +4111,7 @@ static int __maybe_unused fec_resume(struct device *dev)
 		ret = regulator_enable(fep->reg_phy);
 		if (ret)
 			return ret;
+		enable_irq(ndev->phydev->irq);
 	}
 
 	rtnl_lock();
