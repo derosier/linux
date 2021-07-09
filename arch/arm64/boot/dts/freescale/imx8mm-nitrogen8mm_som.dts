@@ -207,6 +207,7 @@
 
 /delete-node/ &csi1_bridge;
 /delete-node/ &display_subsystem;
+/delete-node/ &gpu;
 /delete-node/ &lcdif;
 /delete-node/ &mipi_csi_1;
 /delete-node/ &mipi_dsi;
@@ -218,6 +219,13 @@
 /delete-node/ &sai2;
 /delete-node/ &sai3;
 /delete-node/ &sai5;
+/delete-node/ &vpu_g1;
+/delete-node/ &vpu_g2;
+/delete-node/ &vpu_h1;
+
+&vpumix_pd {
+	status = "disabled";
+};
 
 &ecspi2 {
 	pinctrl-names = "default";
