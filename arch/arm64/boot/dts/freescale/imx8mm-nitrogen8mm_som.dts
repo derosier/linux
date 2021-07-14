@@ -303,3 +303,11 @@
 &usdhc1 {
 	no-cqe;
 };
+
+&cpu_alert0 {
+	temperature = <90000>;
+};
+
+&cpu_crit0 {
+	temperature = <100000>;
+};
