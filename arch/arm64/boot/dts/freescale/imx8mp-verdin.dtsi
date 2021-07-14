@@ -483,6 +483,17 @@
 	pinctrl-names = "default", "gpio";
 	pinctrl-0 = <&pinctrl_i2c2>;
 	pinctrl-1 = <&pinctrl_i2c2_gpio>;
+
+	atmel_mxt_ts_mezzanine: touch-mezzanine@4a {
+		compatible = "atmel,maxtouch";
+		/* Verdin GPIO_3 (SODIMM 210) */
+		interrupt-parent = <&gpio1>;
+		interrupts = <5 IRQ_TYPE_EDGE_FALLING>;
+		reg = <0x4a>;
+		/* Verdin GPIO_2 (SODIMM 208) */
+		reset-gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
+		status = "disabled";
+	};
 };
 
 /* Verdin I2C_4_CSI */
