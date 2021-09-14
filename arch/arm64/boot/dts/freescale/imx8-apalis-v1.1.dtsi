@@ -353,7 +353,7 @@
 	/* xceiver-supply = <&reg_can_stby>; */
 };
 
-/* Apalis CAN3 - Mezzanine */
+/* Apalis CAN3 (optional) */
 &flexcan3 {
 	/* define the following property to disable CAN-FD mode */
 	/* disable-fd-mode; */
@@ -541,7 +541,7 @@
 			>;
 		};
 
-		/* Apalis CAN3 */
+		/* Apalis CAN3 (optional) */
 		pinctrl_flexcan3: flexcan2grp {
 			fsl,pins = <
 				IMX8QM_FLEXCAN2_TX_DMA_FLEXCAN2_TX		0x21
