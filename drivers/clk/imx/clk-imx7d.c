@@ -454,7 +454,7 @@ static void __init imx7d_clocks_init(struct device_node *ccm_node)
 	hws[IMX7D_PLL_DRAM_MAIN_533M] = imx_clk_hw_fixed_factor("pll_dram_533m", "pll_dram_main_clk", 1, 2);
 
 	hws[IMX7D_PLL_SYS_MAIN_480M_CLK] = imx_clk_hw_gate_dis_flags("pll_sys_main_480m_clk", "pll_sys_main_480m", base + 0xb0, 4, CLK_IS_CRITICAL);
-	hws[IMX7D_PLL_SYS_MAIN_240M_CLK] = imx_clk_hw_gate_dis("pll_sys_main_240m_clk", "pll_sys_main_240m", base + 0xb0, 5);
+	hws[IMX7D_PLL_SYS_MAIN_240M_CLK] = imx_clk_hw_gate_dis_flags("pll_sys_main_240m_clk", "pll_sys_main_240m", base + 0xb0, 5, CLK_IS_CRITICAL);
 	hws[IMX7D_PLL_SYS_MAIN_120M_CLK] = imx_clk_hw_gate_dis("pll_sys_main_120m_clk", "pll_sys_main_120m", base + 0xb0, 6);
 	hws[IMX7D_PLL_DRAM_MAIN_533M_CLK] = imx_clk_hw_gate("pll_dram_533m_clk", "pll_dram_533m", base + 0x70, 12);
 
