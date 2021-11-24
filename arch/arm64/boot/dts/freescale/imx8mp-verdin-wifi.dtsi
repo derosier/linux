@@ -20,7 +20,6 @@
 /* On-module Wi-Fi */
 &usdhc1 {
 	bus-width = <4>;
-	cap-power-off-card;
 	keep-power-in-suspend;
 	non-removable;
 	pinctrl-names = "default", "state_100mhz", "state_200mhz";
