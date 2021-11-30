@@ -427,7 +427,8 @@ static int lt8912_bridge_attach(struct drm_bridge *bridge)
 
 	ret = lt8912_attach_dsi(lt);
 
-	enable_irq(lt->irq);
+	if (!ret && irqd_irq_disabled(irq_get_irq_data(lt->irq)))
+		enable_irq(lt->irq);
 
 	return ret;
 }
