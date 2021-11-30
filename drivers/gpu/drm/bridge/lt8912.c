@@ -425,6 +425,11 @@ static int lt8912_bridge_attach(struct drm_bridge *bridge)
 	drm_connector_helper_add(connector, &lt8912_connector_helper_funcs);
 	drm_connector_attach_encoder(connector, bridge->encoder);
 
+	if (!bridge->encoder) {
+		dev_err(lt->dev, "Parent encoder object not found");
+		return -ENODEV;
+	}
+
 	ret = lt8912_attach_dsi(lt);
 
 	if (!ret && irqd_irq_disabled(irq_get_irq_data(lt->irq)))
@@ -462,8 +467,15 @@ static int lt8912_i2c_init(struct lt8912 *lt,
 	if (!lt || !client)
 		return -ENODEV;
 
+	ret = i2c_smbus_read_byte(client);
+	if (ret < 0) {
+		dev_err(lt->dev, "Failed to access device %s at address %02x",
+			info[0].type, info[0].addr);
+		return -ENODEV;
+	}
+
 	for (i = 0; i < ARRAY_SIZE(info); i++) {
-		if (i > 0 ) {
+		if (i > 0) {
 			client = i2c_new_dummy(client->adapter, info[i].addr);
 			if (!client)
 				return -ENODEV;
@@ -542,6 +554,11 @@ static int lt8912_probe(struct i2c_client *i2c, const struct i2c_device_id *id)
 	struct device_node *endpoint;
 	unsigned int irq_flags;
 	int ret = 0;
+
+	if (!i2c_check_functionality(i2c->adapter, I2C_FUNC_I2C)) {
+		DRM_ERROR("device doesn't support I2C\n");
+		return -ENODEV;
+	}
 
 	lt = devm_kzalloc(dev, sizeof(*lt), GFP_KERNEL);
 	if (!lt)
