@@ -25,6 +25,8 @@
 #include <drm/drm_panel.h>
 #include <drm/drm_mipi_dsi.h>
 
+#define HOTPLUG_DEBOUNCE_MS		1100
+
 struct lt8912 {
 	struct drm_bridge bridge;
 	struct drm_connector connector;
@@ -40,6 +42,7 @@ struct lt8912 {
 	struct gpio_desc *hpd_gpio;
 	struct gpio_desc *reset_n;
 	struct i2c_adapter *ddc;        /* optional regular DDC I2C bus */
+	struct delayed_work hotplug_work;
 };
 
 static int lt8912_attach_dsi(struct lt8912 *lt);
@@ -274,12 +277,23 @@ static const struct drm_connector_funcs lt8912_connector_funcs = {
 	.atomic_destroy_state = drm_atomic_helper_connector_destroy_state,
 };
 
+static void lt8912_hotplug_work_func(struct work_struct *work)
+{
+        struct lt8912 *lt;
+
+        lt = container_of(work, struct lt8912, hotplug_work.work);
+
+        if (lt->bridge.dev)
+                drm_helper_hpd_irq_event(lt->bridge.dev);
+
+}
+
 static irqreturn_t lt8912_hpd_irq_thread(int irq, void *arg)
 {
 	struct lt8912 *lt = arg;
-	struct drm_connector *connector = &lt->connector;
 
-	drm_helper_hpd_irq_event(connector->dev);
+	mod_delayed_work(system_wq, &lt->hotplug_work,
+			 msecs_to_jiffies(HOTPLUG_DEBOUNCE_MS));
 
 	return IRQ_HANDLED;
 }
@@ -567,6 +581,7 @@ static int lt8912_probe(struct i2c_client *i2c, const struct i2c_device_id *id)
 	if (!lt)
 		return -ENOMEM;
 
+	dev_set_drvdata(dev, lt);
 	lt->dev = dev;
 
 	/* get optional regular DDC I2C bus */
@@ -597,6 +612,9 @@ static int lt8912_probe(struct i2c_client *i2c, const struct i2c_device_id *id)
 		ret = lt->irq;
 		goto put_i2c_ddc;
 	}
+
+	INIT_DELAYED_WORK(&lt->hotplug_work, lt8912_hotplug_work_func);
+
 	irq_flags = IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING | IRQF_ONESHOT;
 	ret = devm_request_threaded_irq(dev, lt->irq,
 					NULL,
@@ -655,10 +673,13 @@ static int lt8912_remove(struct i2c_client *i2c)
 {
 	struct lt8912 *lt = i2c_get_clientdata(i2c);
 
+	cancel_delayed_work_sync(&lt->hotplug_work);
+
 	lt8912_sleep(lt);
 	mipi_dsi_detach(lt->dsi);
 	drm_bridge_remove(&lt->bridge);
 	of_node_put(lt->host_node);
+	i2c_put_adapter(lt->ddc);
 
 	return 0;
 }
