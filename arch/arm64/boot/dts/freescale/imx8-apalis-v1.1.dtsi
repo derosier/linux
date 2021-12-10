@@ -311,8 +311,6 @@
 	phy-supply = <&reg_fec_supply>;
 	phy-handle = <&ethphy0>;
 	phy-mode = "rgmii-id";
-	phy-reset-duration = <10>;
-	phy-reset-gpios = <&lsio_gpio1 11 GPIO_ACTIVE_LOW>;
 
 	mdio {
 		#address-cells = <1>;
@@ -324,6 +322,10 @@
 			interrupts = <29 IRQ_TYPE_LEVEL_LOW>;
 			micrel,led-mode = <0>;
 			reg = <7>;
+			reset-assert-us = <2>;
+			reset-deassert-us = <2>;
+			reset-gpios = <&lsio_gpio1 11 GPIO_ACTIVE_LOW>;
+			reset-names = "phy-reset";
 		};
 	};
 };
