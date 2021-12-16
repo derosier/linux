@@ -94,24 +94,6 @@
 			};
 		};
 
-		/*
-		 * Power management bus used for powering down phy in suspend
-		 *
-		 * Power management bus used to control LDO4OUT of the
-		 * first PMIC PF8100 from SCFW using IMX_SC_R_BOARD_R0 (+3.3V_ETH)
-		 */
-		reg_fec_supply: regulator-fec-supply {
-			compatible = "regulator-fixed";
-			regulator-name = "+V3.3_ETH (LDO4)";
-			regulator-min-microvolt = <3300000>;
-			regulator-max-microvolt = <3300000>;
-			power-domains = <&pd IMX_SC_R_BOARD_R0>;
-
-			regulator-state-mem {
-				regulator-off-in-suspend;
-			};
-		};
-
 		reg_module_3v3: regulator-module-3v3 {
 			compatible = "regulator-fixed";
 			regulator-name = "+V3.3";
@@ -308,7 +290,6 @@
 	fsl,magic-packet;
 	fsl,mii-exclusive;
 
-	phy-supply = <&reg_fec_supply>;
 	phy-handle = <&ethphy0>;
 	phy-mode = "rgmii-id";
 
