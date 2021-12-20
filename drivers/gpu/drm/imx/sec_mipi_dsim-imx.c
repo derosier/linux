@@ -286,6 +286,7 @@ static int imx_sec_dsim_bind(struct device *dev, struct device *master,
 							   dev);
 	const struct sec_mipi_dsim_plat_data *pdata;
 	struct drm_encoder *encoder;
+	static int retry = 0;
 
 	dev_dbg(dev, "%s: dsim bind begin\n", __func__);
 
@@ -329,7 +330,7 @@ static int imx_sec_dsim_bind(struct device *dev, struct device *master,
 	/* bind sec dsim bridge */
 	ret = sec_mipi_dsim_bind(dev, master, data, encoder, res, irq, pdata);
 	if (ret) {
-		dev_err(dev, "failed to bind sec dsim bridge: %d\n", ret);
+		dev_err(dev, "failed to bind sec dsim bridge: %d, retry %d\n", ret, retry);
 		pm_runtime_disable(dev);
 		drm_encoder_cleanup(encoder);
 		sec_dsim_of_put_resets(dsim_dev);
@@ -341,7 +342,7 @@ static int imx_sec_dsim_bind(struct device *dev, struct device *master,
 		 * it follows 'one fails, all fail'. It is useful
 		 * when there exists multiple heads display.
 		 */
-		if (ret == -ENODEV)
+		if ((ret == -ENODEV) || ((retry++ >= 3) && (ret == -EPROBE_DEFER)))
 			return 0;
 
 		return ret;
