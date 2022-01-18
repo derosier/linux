@@ -230,6 +230,10 @@ int mcp25xxfd_can_switch_mode_no_wait(struct mcp25xxfd_priv *priv,
 		reg = &dummy;
 	}
 
+	/* going out of configuration mode always reset tef.index */
+	if( ((*reg & MCP25XXFD_CAN_CON_OPMOD_MASK) >> MCP25XXFD_CAN_CON_OPMOD_SHIFT) == 4 )
+		priv->cpriv->fifos.tef.index = 0;
+
 	/* compute the effective mode in osc*/
 	*reg &= ~(MCP25XXFD_CAN_CON_REQOP_MASK |
 		  MCP25XXFD_CAN_CON_OPMOD_MASK);
