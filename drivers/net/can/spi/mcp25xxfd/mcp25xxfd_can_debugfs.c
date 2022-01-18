@@ -65,19 +65,7 @@ static void mcp25xxfd_can_debugfs_stats(struct mcp25xxfd_can_priv *cpriv,
 	DEBUGFS_CREATE("int_crcerror",		 int_cerr_count);
 
 	DEBUGFS_CREATE("tef_reads",		 tef_reads);
-	DEBUGFS_CREATE("tef_conservative_reads", tef_conservative_reads);
-	DEBUGFS_CREATE("tef_optimized_reads",	 tef_optimized_reads);
 	DEBUGFS_CREATE("tef_read_splits",	 tef_read_splits);
-
-	for (i = 0; i < MCP25XXFD_CAN_TEF_READ_BINS - 1; i++) {
-		snprintf(name, sizeof(name),
-			 "tef_optimized_reads_%i", i + 1);
-		data = &cpriv->stats.tef_optimized_read_sizes[i];
-		debugfs_create_u64(name, 0444, dir, data);
-	}
-	snprintf(name, sizeof(name), "tef_optimized_reads_%i+", i + 1);
-	debugfs_create_u64(name, 0444, dir,
-			   &cpriv->stats.tef_optimized_read_sizes[i]);
 
 	DEBUGFS_CREATE("tx_frames_fd",		 tx_fd_count);
 	DEBUGFS_CREATE("tx_frames_brs",		 tx_brs_count);
