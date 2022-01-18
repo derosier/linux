@@ -351,8 +351,25 @@ int mcp25xxfd_can_probe(struct mcp25xxfd_priv *priv)
 	/* so if we are in config mode then everything is fine
 	 * and we check that a mode switch works propperly
 	 */
-	if (mode == MCP25XXFD_CAN_CON_MODE_CONFIG)
+	if (mode == MCP25XXFD_CAN_CON_MODE_CONFIG) {
+		/* all mode switches require bus idle condition. Power on default bit rate setting is about
+		 * 500kbps @ 40MHz. This is OK for all real bus speeds up to 500kbps and SYSCLK=40MHz. But
+		 * probe may fail when real bus speed is 1Mbps and bus load is high (>50%). As well
+		 * probe may fail with SYSCLK=20MHz and high bus load on 500kbps bus.
+		 * Switching to >=1Mbps bitrate @ 20MHz to avoid this issue for SYSCLK>=20MHz and
+		 * all standard arbitration bitrates */
+		ret = mcp25xxfd_cmd_write(spi, MCP25XXFD_CAN_NBTCFG, (0 << MCP25XXFD_CAN_NBTCFG_BRP_SHIFT) |
+                                                                    (13 << MCP25XXFD_CAN_NBTCFG_TSEG1_SHIFT) |
+                                                                    (4 << MCP25XXFD_CAN_NBTCFG_TSEG2_SHIFT) |
+                                                                    (1 << MCP25XXFD_CAN_NBTCFG_SJW_SHIFT));
+
+	        if (ret)
+		    return ret;
+
 		return mcp25xxfd_can_probe_modeswitch(priv);
+        } else {
+		dev_warn(&spi->dev, "Not in CONFIG mode.\n");
+        }
 
 	/* if the bitfield is 0 then there is something is wrong */
 	if (!mode_data) {
