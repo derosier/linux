@@ -284,7 +284,8 @@ static void mcp25xxfd_can_int_handle_ivmif_tx(struct mcp25xxfd_can_priv *cpriv,
 	      MCP25XXFD_CAN_BDIAG1_DBIT0ERR |
 	      MCP25XXFD_CAN_BDIAG1_NACKERR |
 	      MCP25XXFD_CAN_BDIAG1_NBIT1ERR |
-	      MCP25XXFD_CAN_BDIAG1_NBIT0ERR
+	      MCP25XXFD_CAN_BDIAG1_NBIT0ERR |
+	      MCP25XXFD_CAN_BDIAG1_TXBOERR
 		     )) == 0)
 		return;
 
@@ -321,6 +322,9 @@ static void mcp25xxfd_can_int_handle_ivmif_tx(struct mcp25xxfd_can_priv *cpriv,
 		cpriv->can.dev->stats.tx_carrier_errors++;
 		cpriv->error_frame.data[2] |= CAN_ERR_PROT_BIT1;
 	}
+	if (cpriv->bus.bdiag[1] & MCP25XXFD_CAN_BDIAG1_TXBOERR) {
+		*mask |= MCP25XXFD_CAN_BDIAG1_TXBOERR;
+	}
 	if (cpriv->bus.bdiag[1] & MCP25XXFD_CAN_BDIAG1_DBIT0ERR) {
 		/* TX-Frame CAN-BUS Level is unexpectedly recessive
 		 * during data phase
@@ -341,7 +345,8 @@ static void mcp25xxfd_can_int_handle_ivmif_rx(struct mcp25xxfd_can_priv *cpriv,
 	      MCP25XXFD_CAN_BDIAG1_DFORMERR |
 	      MCP25XXFD_CAN_BDIAG1_NCRCERR |
 	      MCP25XXFD_CAN_BDIAG1_NSTUFERR |
-	      MCP25XXFD_CAN_BDIAG1_NFORMERR
+	      MCP25XXFD_CAN_BDIAG1_NFORMERR |
+	      MCP25XXFD_CAN_BDIAG1_DLCMM
 		     )) == 0)
 		return;
 
@@ -388,6 +393,10 @@ static void mcp25xxfd_can_int_handle_ivmif_rx(struct mcp25xxfd_can_priv *cpriv,
 		cpriv->can.dev->stats.rx_frame_errors++;
 		cpriv->error_frame.data[2] |= CAN_ERR_PROT_FORM;
 	}
+	if (cpriv->bus.bdiag[1] & MCP25XXFD_CAN_BDIAG1_DLCMM) {
+		*mask |= MCP25XXFD_CAN_BDIAG1_DLCMM;
+		cpriv->can.dev->stats.rx_frame_errors++;
+	}
 }
 
 static int mcp25xxfd_can_int_handle_ivmif(struct mcp25xxfd_can_priv *cpriv)
@@ -429,15 +438,15 @@ static int mcp25xxfd_can_int_handle_ivmif(struct mcp25xxfd_can_priv *cpriv)
 		dev_warn_once(&spi->dev,
 			      "found IVMIF situation not supported by driver - bdiag = [0x%08x, 0x%08x]",
 			      cpriv->bus.bdiag[0], cpriv->bus.bdiag[1]);
-		return -EINVAL;
+	} else {
+		/* clear the bits in bdiag1 */
+		bdiag1 = cpriv->bus.bdiag[1] & (~mask);
+		/* and write it */
+		ret = mcp25xxfd_cmd_write_mask(spi, MCP25XXFD_CAN_BDIAG1, bdiag1, mask);
+		if (ret)
+			return ret;
 	}
 
-	/* clear the bits in bdiag1 */
-	bdiag1 = cpriv->bus.bdiag[1] & (~mask);
-	/* and write it */
-	ret = mcp25xxfd_cmd_write_mask(spi, MCP25XXFD_CAN_BDIAG1, bdiag1, mask);
-	if (ret)
-		return ret;
 
 	/* and clear the interrupt flag until we have received or transmited */
 	cpriv->status.intf &= ~(MCP25XXFD_CAN_INT_IVMIE);
