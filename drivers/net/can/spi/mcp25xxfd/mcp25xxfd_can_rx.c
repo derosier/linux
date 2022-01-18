@@ -276,7 +276,8 @@ static int mcp25xxfd_can_rx_predict_prefetch(struct mcp25xxfd_can_priv *cpriv)
 	cpriv->rx_history.predicted_len = can_dlc2len(dlc);
 
 	/* return the predicted length */
-	return cpriv->rx_history.predicted_len;
+	/* returned value must be word size aligned */
+	return (ALIGN(cpriv->rx_history.predicted_len, 4));
 }
 
 /* at least in can2.0 mode we can read multiple RX-fifos in one go
