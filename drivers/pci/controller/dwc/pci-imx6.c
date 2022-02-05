@@ -1148,6 +1148,12 @@ static void imx6_pcie_assert_core_reset(struct imx6_pcie *imx6_pcie)
 			dev_err(dev, "failed to disable vpcie regulator: %d\n",
 				ret);
 	}
+
+	/* Some boards don't have PCIe reset GPIO. */
+	if (imx6_pcie->reset_gpiod) {
+		gpiod_set_value_cansleep(imx6_pcie->reset_gpiod,
+					!imx6_pcie->gpio_active_high);
+	}
 }
 
 static void imx6_pcie_set_l1_latency(struct imx6_pcie *imx6_pcie)
@@ -1221,16 +1227,6 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
 	default:
 		imx6_pcie_clk_enable(imx6_pcie);
 		break;
-	}
-
-	/* Some boards don't have PCIe reset GPIO. */
-	if (imx6_pcie->reset_gpiod) {
-		gpiod_set_value_cansleep(imx6_pcie->reset_gpiod,
-					!imx6_pcie->gpio_active_high);
-		msleep(100);
-		gpiod_set_value_cansleep(imx6_pcie->reset_gpiod,
-					imx6_pcie->gpio_active_high);
-		msleep(20);
 	}
 
 	switch (imx6_pcie->drvdata->variant) {
@@ -1401,6 +1397,19 @@ static int imx6_pcie_deassert_core_reset(struct imx6_pcie *imx6_pcie)
 	case IMX6Q:		/* Nothing to do */
 	case IMX6Q_EP:
 		break;
+	}
+
+	/* Some boards don't have PCIe reset GPIO. */
+	if (imx6_pcie->reset_gpiod) {
+		msleep(100);
+		gpiod_set_value_cansleep(imx6_pcie->reset_gpiod,
+					 imx6_pcie->gpio_active_high);
+		/*
+		 * PCI Express Base Specification:
+		 *   A delay of at least 100ms is required after PERST# is
+		 *   de-asserted before issuing any Configuration Requests
+		 */
+		msleep(100);
 	}
 
 	return 0;
