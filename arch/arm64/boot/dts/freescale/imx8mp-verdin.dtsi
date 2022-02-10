@@ -386,6 +386,12 @@
 		reg = <0x32>;
 	};
 
+	/* On-module temperature sensor */
+	hwmon_temp_module: sensor@48 {
+		compatible = "ti,tmp1075";
+		reg = <0x48>;
+	};
+
 	adc@49 {
 		compatible = "ti,ads1015";
 		reg = <0x49>;
