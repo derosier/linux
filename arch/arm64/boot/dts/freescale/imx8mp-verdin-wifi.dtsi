@@ -17,6 +17,14 @@
 	};
 };
 
+&gpio3 {
+	gpio-line-names = "";
+};
+
+&gpio4 {
+	gpio-line-names = "";
+};
+
 /* On-module Wi-Fi */
 &usdhc1 {
 	bus-width = <4>;
@@ -30,12 +38,4 @@
 	vmmc-supply = <&reg_wifi_en>;
 	wifi-host;
 	status = "okay";
-};
-
-&gpio3 {
-	gpio-line-names = "";
-};
-
-&gpio4 {
-	gpio-line-names = "";
 };
