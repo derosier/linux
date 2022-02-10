@@ -964,16 +964,18 @@
 		>;
 	};
 
+	/* USB_2_OC# */
 	pinctrl_gpio_hog2: gpiohog2grp {
 		fsl,pins = <
-			MX8MP_IOMUXC_SAI3_MCLK__GPIO5_IO02		0x1c4	/* SODIMM 91 */
+			MX8MP_IOMUXC_SAI3_MCLK__GPIO5_IO02		0x1c4	/* SODIMM 187 */
 		>;
 	};
 
 	pinctrl_gpio_hog3: gpiohog3grp {
 		fsl,pins = <
 			MX8MP_IOMUXC_GPIO1_IO13__GPIO1_IO13		0x1c4	/* SODIMM 157 */
-			MX8MP_IOMUXC_GPIO1_IO15__GPIO1_IO15		0x1c4	/* SODIMM 187 */
+			/* CSI_1_MCLK */
+			MX8MP_IOMUXC_GPIO1_IO15__GPIO1_IO15		0x1c4	/* SODIMM 91 */
 		>;
 	};
 
