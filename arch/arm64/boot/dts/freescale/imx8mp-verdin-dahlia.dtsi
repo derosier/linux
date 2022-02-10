@@ -199,12 +199,6 @@
 	status = "okay";
 };
 
-/* Verdin UART_4 */
-/* Often used by the M7 and then should not be enabled here. */
-&uart4 {
-	status = "disabled";
-};
-
 /* Verdin USB_1 */
 &usb3_phy0 {
 	status = "okay";

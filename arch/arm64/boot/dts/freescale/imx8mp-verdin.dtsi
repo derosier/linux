@@ -697,7 +697,7 @@
 	pinctrl-0 = <&pinctrl_uart3>;
 };
 
-/* Verdin UART_4 */
+/* Verdin UART_4, used for Bluetooth on Wi-Fi/Bluetooth SKUs */
 &uart4 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart4>;
@@ -781,6 +781,15 @@
 };
 
 &iomuxc {
+	pinctrl_bt_uart: btuartgrp {
+		fsl,pins = <
+			MX8MP_IOMUXC_ECSPI2_SCLK__UART4_DCE_RX		0x1c4
+			MX8MP_IOMUXC_ECSPI2_MOSI__UART4_DCE_TX		0x1c4
+			MX8MP_IOMUXC_ECSPI2_MISO__UART4_DCE_CTS		0x1c4
+			MX8MP_IOMUXC_ECSPI2_SS0__UART4_DCE_RTS		0x1c4
+		>;
+	};
+
 	pinctrl_ctrl_sleep_moci: ctrlsleepmocigrp {
 		fsl,pins = <
 			MX8MP_IOMUXC_SAI3_RXC__GPIO4_IO29		0x1c4	/* SODIMM 256 */
@@ -953,6 +962,7 @@
 		>;
 	};
 
+	/* Non-wifi MSP usage only */
 	pinctrl_gpio_hog1: gpiohog1grp {
 		fsl,pins = <
 			MX8MP_IOMUXC_ECSPI2_MISO__GPIO5_IO12		0x1c4	/* SODIMM 116 */
@@ -974,6 +984,14 @@
 			MX8MP_IOMUXC_GPIO1_IO13__GPIO1_IO13		0x1c4	/* SODIMM 157 */
 			/* CSI_1_MCLK */
 			MX8MP_IOMUXC_GPIO1_IO15__GPIO1_IO15		0x1c4	/* SODIMM 91 */
+		>;
+	};
+
+	/* Wifi usage only */
+	pinctrl_gpio_hog4: gpiohog4grp {
+		fsl,pins = <
+			MX8MP_IOMUXC_UART4_RXD__GPIO5_IO28		0x1c4	/* SODIMM 151 */
+			MX8MP_IOMUXC_UART4_TXD__GPIO5_IO29		0x1c4	/* SODIMM 153 */
 		>;
 	};
 
@@ -1155,6 +1173,7 @@
 		>;
 	};
 
+	/* Non-wifi usage only */
 	pinctrl_uart4: uart4grp {
 		fsl,pins = <
 			MX8MP_IOMUXC_UART4_RXD__UART4_DCE_RX		0x1c4	/* SODIMM 151 */
@@ -1320,9 +1339,14 @@
 		>;
 	};
 
-	pinctrl_wifi_ctrl: wifictrlgrp {
+	pinctrl_bluetooth_ctrl: bluetoothctrlgrp {
 		fsl,pins = <
 			MX8MP_IOMUXC_SD1_DATA6__GPIO2_IO08		0x1c4		/* WIFI_WKUP_BT */
+		>;
+	};
+
+	pinctrl_wifi_ctrl: wifictrlgrp {
+		fsl,pins = <
 			MX8MP_IOMUXC_SD1_DATA7__GPIO2_IO09		0x1c4		/* WIFI_WKUP_WLAN */
 		>;
 	};
