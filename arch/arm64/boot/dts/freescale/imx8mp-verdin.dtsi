@@ -788,7 +788,7 @@
 		    <&pinctrl_gpio3>, <&pinctrl_gpio4>,
 		    <&pinctrl_gpio7>, <&pinctrl_gpio8>,
 		    <&pinctrl_gpio_hog1>, <&pinctrl_gpio_hog2>, <&pinctrl_gpio_hog3>,
-		    <&pinctrl_hdmi_hog>, <&pinctrl_pmic_tpm_ena>;
+		    <&pinctrl_hdmi_hog>;
 
 	pinctrl_ctrl_sleep_moci: ctrlsleepmocigrp {
 		fsl,pins = <
@@ -1128,13 +1128,6 @@
 			MX8MP_IOMUXC_SAI3_TXFS__AUDIOMIX_SAI3_TX_SYNC	0x1d6	/* SODIMM 44 */
 			MX8MP_IOMUXC_SAI3_TXC__AUDIOMIX_SAI3_TX_BCLK	0x1d6	/* SODIMM 42 */
 			MX8MP_IOMUXC_SAI3_TXD__AUDIOMIX_SAI3_TX_DATA00	0x96	/* SODIMM 46 */
-		>;
-	};
-
-	/* control signal for optional ATTPM20P */
-	pinctrl_pmic_tpm_ena: pmictpmenagrp {
-		fsl,pins = <
-			MX8MP_IOMUXC_SD1_RESET_B__GPIO2_IO10		0x1c4	/* PMIC_TPM_ENA */
 		>;
 	};
 
