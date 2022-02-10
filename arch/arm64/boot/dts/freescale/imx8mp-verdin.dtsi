@@ -156,7 +156,7 @@
 	phy-mode = "rgmii-id";
 	phy-supply = <&reg_module_eth1phy>;
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_eqos>;
+	pinctrl-0 = <&pinctrl_eqos>, <&pinctrl_eth_tpm_int>;
 
 	mdio {
 		compatible = "snps,dwmac-mdio";
@@ -815,6 +815,12 @@
 			MX8MP_IOMUXC_ENET_TD3__ENET_QOS_RGMII_TD3	0x1f
 			MX8MP_IOMUXC_ENET_TX_CTL__ENET_QOS_RGMII_TX_CTL	0x1f
 			MX8MP_IOMUXC_ENET_TXC__CCM_ENET_QOS_CLOCK_GENERATE_TX_CLK	0x1f
+		>;
+	};
+
+	/* ETH_INT# shared with TPM_INT# (usually N/A) */
+	pinctrl_eth_tpm_int: ethtpmintgrp {
+		fsl,pins = <
 			MX8MP_IOMUXC_GPIO1_IO10__GPIO1_IO10		0x1c4
 		>;
 	};
