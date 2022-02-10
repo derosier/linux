@@ -714,12 +714,10 @@
 };
 
 &usb_dwc3_0 {
-//	dr_mode = "otg";
-	dr_mode = "peripheral";
+	dr_mode = "otg";
 	hnp-disable;
 	srp-disable;
 	adp-disable;
-	usb-role-switch;
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usb1_en>;
 };
@@ -1167,6 +1165,13 @@
 	pinctrl_usb1_en: usb1engrp {
 		fsl,pins = <
 			MX8MP_IOMUXC_GPIO1_IO12__USB1_PWR		0x184	/* SODIMM 155 */
+		>;
+	};
+
+	/* USB_1_ID */
+	pinctrl_usb_1_id: usb1idgrp {
+		fsl,pins = <
+			MX8MP_IOMUXC_SD1_RESET_B__GPIO2_IO10		0x1c4	/* SODIMM 161 */
 		>;
 	};
 
