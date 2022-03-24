@@ -1269,6 +1269,10 @@
 		>;
 	};
 
+	/*
+	 * Note: Due to ERR050080 we use discrete external on-module resistors pulling-up to the
+	 * on-module +V3.3_1.8_SD (LDO5) rail and explicitly disable the internal pull-ups here.
+	 */
 	pinctrl_usdhc2: usdhc2grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_SD2_CLK_USDHC2_CLK			0x90	/* SODIMM 78 */
