@@ -39,6 +39,7 @@
 #define SD8977_DEFAULT_FW_NAME "mrvl/sdsd8977_combo_v2.bin"
 #define SD8987_DEFAULT_FW_NAME "mrvl/sd8987_uapsta.bin"
 #define SD8997_DEFAULT_FW_NAME "mrvl/sdsd8997_combo_v4.bin"
+#define SD8997_SDIOUART_FW_NAME "mrvl/sdiouart8997_combo_v4.bin"
 
 #define BLOCK_MODE	1
 #define BYTE_MODE	0
@@ -668,6 +669,7 @@ static const struct mwifiex_sdio_device mwifiex_sdio_sd8977 = {
 
 static const struct mwifiex_sdio_device mwifiex_sdio_sd8997 = {
 	.firmware = SD8997_DEFAULT_FW_NAME,
+	.firmware_sdiouart = SD8997_SDIOUART_FW_NAME,
 	.reg = &mwifiex_reg_sd8997,
 	.max_ports = 32,
 	.mp_agg_pkt_limit = 16,
