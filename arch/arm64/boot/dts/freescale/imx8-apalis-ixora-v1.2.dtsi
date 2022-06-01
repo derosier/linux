@@ -309,14 +309,14 @@
 		};
 
 		/* Apalis MMC1_CD# */
-		pinctrl_mmc1_cd_4bit: mmc1cdgrp_4bit {
+		pinctrl_mmc1_cd: mmc1cdgrp {
 			fsl,pins = <
 				IMX8QM_ESAI1_TX1_LSIO_GPIO2_IO09		0x00000021
 			>;
 		};
 
 		/* Apalis MMC1 */
-		pinctrl_usdhc2_4bit: usdhc2grp_4bit {
+		pinctrl_usdhc2: usdhc2grp {
 			fsl,pins = <
 				IMX8QM_USDHC1_CLK_CONN_USDHC1_CLK		0x06000041
 				IMX8QM_USDHC1_CMD_CONN_USDHC1_CMD		0x00000021
@@ -331,14 +331,14 @@
 		};
 
 		/* Apalis MMC1_CD# */
-		pinctrl_mmc1_cd_4bit_sleep: mmc1cdgrp_4bit {
+		pinctrl_mmc1_cd_sleep: mmc1cdgrp {
 			fsl,pins = <
 				IMX8QM_ESAI1_TX1_LSIO_GPIO2_IO09		0x04000041
 			>;
 		};
 
 		/* Apalis MMC1 */
-		pinctrl_usdhc2_4bit_sleep: usdhc2grp_4bit {
+		pinctrl_usdhc2_sleep: usdhc2grp {
 			fsl,pins = <
 				IMX8QM_USDHC1_CLK_CONN_USDHC1_CLK		0x04000041
 				IMX8QM_USDHC1_CMD_CONN_USDHC1_CMD		0x04000041
@@ -501,10 +501,10 @@
 /* Apalis MMC1 */
 &usdhc2 {
 	pinctrl-names = "default", "state_100mhz", "state_200mhz", "sleep";
-	pinctrl-0 = <&pinctrl_usdhc2_4bit>, <&pinctrl_mmc1_cd_4bit>;
-	pinctrl-1 = <&pinctrl_usdhc2_4bit>, <&pinctrl_mmc1_cd_4bit>;
-	pinctrl-2 = <&pinctrl_usdhc2_4bit>, <&pinctrl_mmc1_cd_4bit>;
-	pinctrl-3 = <&pinctrl_usdhc2_4bit_sleep &pinctrl_mmc1_cd_4bit_sleep>;
+	pinctrl-0 = <&pinctrl_usdhc2>, <&pinctrl_mmc1_cd>;
+	pinctrl-1 = <&pinctrl_usdhc2>, <&pinctrl_mmc1_cd>;
+	pinctrl-2 = <&pinctrl_usdhc2>, <&pinctrl_mmc1_cd>;
+	pinctrl-3 = <&pinctrl_usdhc2_sleep &pinctrl_mmc1_cd_sleep>;
 	bus-width = <4>;
 	cap-power-off-card;
 	vmmc-supply = <&reg_3v3_vmmc>;
