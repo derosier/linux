@@ -255,19 +255,21 @@
 		    <&pinctrl_sim0_gpios>, <&pinctrl_usdhc1_gpios>,
 		    <&pinctrl_uart24_forceoff>;
 
-	pinctrl_leds_ixora: ledsixoragrp {
-		fsl,pins = <
-			IMX8QM_USDHC2_DATA1_LSIO_GPIO5_IO27 			0x41 /* LED_4_GREEN */
-			IMX8QM_USDHC2_DATA3_LSIO_GPIO5_IO29 			0x41 /* LED_4_RED */
-			IMX8QM_USDHC1_DATA5_LSIO_GPIO5_IO20 			0x41 /* LED_5_GREEN */
-			IMX8QM_USDHC1_DATA6_LSIO_GPIO5_IO21 			0x41 /* LED_5_RED */
-		>;
-	};
+	apalis-imx8qm {
+		pinctrl_leds_ixora: ledsixoragrp {
+			fsl,pins = <
+				IMX8QM_USDHC2_DATA1_LSIO_GPIO5_IO27		0x41 /* LED_4_GREEN */
+				IMX8QM_USDHC2_DATA3_LSIO_GPIO5_IO29		0x41 /* LED_4_RED */
+				IMX8QM_USDHC1_DATA5_LSIO_GPIO5_IO20		0x41 /* LED_5_GREEN */
+				IMX8QM_USDHC1_DATA6_LSIO_GPIO5_IO21		0x41 /* LED_5_RED */
+			>;
+		};
 
-	pinctrl_uart24_forceoff: uart24forceoffgrp {
-		fsl,pins = <
-			IMX8QM_USDHC2_CMD_LSIO_GPIO5_IO25 			0x21
-		>;
+		pinctrl_uart24_forceoff: uart24forceoffgrp {
+			fsl,pins = <
+				IMX8QM_USDHC2_CMD_LSIO_GPIO5_IO25		0x21
+			>;
+		};
 	};
 };
 
