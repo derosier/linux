@@ -311,7 +311,7 @@
 		/* Apalis MMC1_CD# */
 		pinctrl_mmc1_cd: mmc1cdgrp {
 			fsl,pins = <
-				IMX8QM_ESAI1_TX1_LSIO_GPIO2_IO09		0x00000021
+				IMX8QM_ESAI1_TX1_LSIO_GPIO2_IO09		0x00000061
 			>;
 		};
 
