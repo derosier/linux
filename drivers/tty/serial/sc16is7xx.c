@@ -316,6 +316,7 @@ struct sc16is7xx_one {
 	struct kthread_work		tx_work;
 	struct kthread_work		reg_work;
 	struct sc16is7xx_one_config	config;
+	struct gpio_desc		*txen_gpio;
 };
 
 struct sc16is7xx_port {
@@ -642,9 +643,21 @@ static void sc16is7xx_handle_rx(struct uart_port *port, unsigned int rxlen,
 	tty_flip_buffer_push(&port->state->port);
 }
 
+static void sc16is7xx_txen_on(struct gpio_desc *txen_gpio)
+{
+	gpiod_set_value(txen_gpio, 1); /* note that if we don't have a txen_gpio, this is NOP */
+}
+
+static void sc16is7xx_txen_off(struct gpio_desc *txen_gpio)
+{
+	gpiod_set_value(txen_gpio, 0); /* note that if we don't have a txen_gpio, this is NOP */
+}
+
 static void sc16is7xx_handle_tx(struct uart_port *port)
 {
 	struct sc16is7xx_port *s = dev_get_drvdata(port->dev);
+	struct sc16is7xx_one *one = to_sc16is7xx_one(port, port);
+
 	struct circ_buf *xmit = &port->state->xmit;
 	unsigned int txlen, to_send, i;
 
@@ -656,7 +669,7 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
 	}
 
 	if (uart_circ_empty(xmit) || uart_tx_stopped(port))
-		return;
+		goto txen_off;
 
 	/* Get length of data pending in circular buffer */
 	to_send = uart_circ_chars_pending(xmit);
@@ -683,8 +696,14 @@ static void sc16is7xx_handle_tx(struct uart_port *port)
 		sc16is7xx_fifo_write(port, to_send);
 	}
 
-	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS) {
 		uart_write_wakeup(port);
+		return;
+	}
+
+txen_off:
+	/* We get here when there's no more bytes left to transmit */
+	sc16is7xx_txen_off(one->txen_gpio);
 }
 
 static bool sc16is7xx_port_irq(struct sc16is7xx_port *s, int portno)
@@ -752,11 +771,15 @@ static irqreturn_t sc16is7xx_irq(int irq, void *dev_id)
 
 static void sc16is7xx_tx_proc(struct kthread_work *ws)
 {
-	struct uart_port *port = &(to_sc16is7xx_one(ws, tx_work)->port);
+	struct sc16is7xx_one *one = to_sc16is7xx_one(ws, tx_work);
+	struct uart_port *port = &(one->port);
 
-	if ((port->rs485.flags & SER_RS485_ENABLED) &&
-	    (port->rs485.delay_rts_before_send > 0))
-		msleep(port->rs485.delay_rts_before_send);
+	if (port->rs485.flags & SER_RS485_ENABLED) {
+		if (port->rs485.delay_rts_before_send > 0)
+			msleep(port->rs485.delay_rts_before_send);
+	} else {
+		sc16is7xx_txen_on(one->txen_gpio);
+	}
 
 	sc16is7xx_handle_tx(port);
 }
@@ -1186,6 +1209,11 @@ static int sc16is7xx_gpio_direction_output(struct gpio_chip *chip,
 }
 #endif
 
+const char * TXEN_NAME[] = {
+  "txen0",
+  "txen1",
+};
+
 static int sc16is7xx_probe(struct device *dev,
 			   const struct sc16is7xx_devtype *devtype,
 			   struct regmap *regmap, int irq, unsigned long flags)
@@ -1196,6 +1224,7 @@ static int sc16is7xx_probe(struct device *dev,
 	int i, ret;
 	struct sc16is7xx_port *s;
 	struct gpio_desc *gpio;
+	struct gpio_desc *txen;
 
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
@@ -1290,6 +1319,14 @@ static int sc16is7xx_probe(struct device *dev,
 			ret = -ENOMEM;
 			goto out_ports;
 		}
+
+		/* Get the optional txen gpio */
+		txen = devm_gpiod_get_optional(dev, TXEN_NAME[i], GPIOD_OUT_LOW);
+		if (IS_ERR(txen)) {
+			ret = PTR_ERR(txen);
+			goto out_ports;
+		}
+		s->p[i].txen_gpio = txen;
 
 		/* Disable all interrupts */
 		sc16is7xx_port_write(&s->p[i].port, SC16IS7XX_IER_REG, 0);
