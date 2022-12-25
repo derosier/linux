@@ -35,6 +35,9 @@
 #include <linux/usb/serial.h>
 #include <linux/kfifo.h>
 #include <linux/idr.h>
+#include <linux/of.h>
+#include <linux/of_gpio.h>
+#include <linux/gpio/consumer.h>
 
 #define DRIVER_AUTHOR "Greg Kroah-Hartman <gregkh@linuxfoundation.org>"
 #define DRIVER_DESC "USB Serial Driver core"
@@ -52,6 +55,29 @@
 static DEFINE_IDR(serial_minors);
 static DEFINE_MUTEX(table_lock);
 static LIST_HEAD(usb_serial_driver_list);
+
+static u8 txen_gpios_index = 0;
+
+static struct gpio_desc * usb_serial_get_txen(struct device * dev, int index)
+{
+	struct device_node * txen_devnode = NULL;
+	struct gpio_desc * txen;
+	char label[6];
+
+	txen_devnode = of_find_compatible_node(NULL, NULL, "usbserial,span");
+	if(txen_devnode) {
+		snprintf(label, sizeof(label), "txen%d", index);
+		txen = devm_gpiod_get_from_of_node(dev,
+						   txen_devnode,
+						   "gpios", index,
+						   GPIOD_OUT_LOW,
+						   label
+						   );
+	}
+
+	of_node_put(txen_devnode);
+	return txen;
+}
 
 /*
  * Look up the serial port structure.  If it is found and it hasn't been
@@ -875,6 +901,7 @@ static int usb_serial_probe(struct usb_interface *interface,
 	int i;
 	int num_ports = 0;
 	unsigned char max_endpoints;
+	struct gpio_desc * txen;
 
 	mutex_lock(&table_lock);
 	type = search_serial_device(interface);
@@ -1054,6 +1081,17 @@ static int usb_serial_probe(struct usb_interface *interface,
 		retval = device_add(&port->dev);
 		if (retval)
 			dev_err(ddev, "Error registering port device, continuing\n");
+	}
+
+	/* setup txen pins if necessary */
+	for (i = 0; i < num_ports; ++i) {
+		port = serial->port[i];
+		txen = usb_serial_get_txen(&port->dev, txen_gpios_index);
+		txen_gpios_index++;
+		WARN_ON(txen_gpios_index == 0); /* Overflow, shouldn't ever happen */
+		if (!IS_ERR(txen)) {
+			port->txen_gpio = txen;
+		}
 	}
 
 	if (num_ports > 0)

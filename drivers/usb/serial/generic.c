@@ -103,6 +103,16 @@ void usb_serial_generic_deregister(void)
 #endif
 }
 
+static void usb_serial_generic_txen_on(struct gpio_desc *txen_gpio)
+{
+	gpiod_set_value(txen_gpio, 1); /* note that if we don't have a txen_gpio, this is NOP */
+}
+
+static void usb_serial_generic_txen_off(struct gpio_desc *txen_gpio)
+{
+	gpiod_set_value(txen_gpio, 0); /* note that if we don't have a txen_gpio, this is NOP */
+}
+
 int usb_serial_generic_open(struct tty_struct *tty, struct usb_serial_port *port)
 {
 	int result = 0;
@@ -181,6 +191,8 @@ retry:
 	spin_lock_irqsave(&port->lock, flags);
 	port->tx_bytes += count;
 	spin_unlock_irqrestore(&port->lock, flags);
+
+	usb_serial_generic_txen_on(port->txen_gpio);
 
 	clear_bit(i, &port->write_urbs_free);
 	result = usb_submit_urb(urb, mem_flags);
@@ -294,6 +306,9 @@ void usb_serial_generic_wait_until_sent(struct tty_struct *tty, long timeout)
 		if (timeout && time_after(jiffies, expire))
 			break;
 	}
+
+	usb_serial_generic_txen_off(port->txen_gpio);
+
 }
 EXPORT_SYMBOL_GPL(usb_serial_generic_wait_until_sent);
 

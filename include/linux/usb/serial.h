@@ -19,6 +19,7 @@
 #include <linux/serial.h>
 #include <linux/sysrq.h>
 #include <linux/kfifo.h>
+#include <linux/gpio/consumer.h>
 
 /* The maximum number of ports one device can grab at once */
 #define MAX_NUM_PORTS		16
@@ -107,6 +108,8 @@ struct usb_serial_port {
 
 	struct async_icount	icount;
 	int			tx_bytes;
+
+	struct gpio_desc	*txen_gpio;
 
 	unsigned long		flags;
 	wait_queue_head_t	write_wait;
