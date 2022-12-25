@@ -1218,7 +1218,7 @@ static int sc16is7xx_probe(struct device *dev,
 			   const struct sc16is7xx_devtype *devtype,
 			   struct regmap *regmap, int irq, unsigned long flags)
 {
-	struct sched_param sched_param = { .sched_priority = MAX_RT_PRIO / 2 };
+	struct sched_param sched_param = { .sched_priority = 99 };
 	unsigned long freq = 0, *pfreq = dev_get_platdata(dev);
 	u32 uartclk = 0;
 	int i, ret;
