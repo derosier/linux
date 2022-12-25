@@ -140,6 +140,11 @@
 			reg = <0 0xb8000000 0 0x400000>;
 		};
 	};
+
+	usb_serial_txen: usbserialtxen {
+		compatible = "usbserial,span";
+		gpios = <&gpio3 23 GPIO_ACTIVE_HIGH>, <&gpio3 22 GPIO_ACTIVE_HIGH>, <&gpio3 21 GPIO_ACTIVE_HIGH>, <0>;
+	};
 };
 
 &A53_0 {
@@ -833,9 +838,6 @@
                         MX8MM_IOMUXC_SAI2_TXC_GPIO4_IO25                0x184    /* SODIMM 30 */
                         MX8MM_IOMUXC_SAI2_MCLK_GPIO4_IO27               0x184    /* SODIMM 38 */
                         MX8MM_IOMUXC_SAI2_TXD0_GPIO4_IO26               0x184    /* SODIMM 34 */
-                        MX8MM_IOMUXC_SAI5_RXD0_GPIO3_IO21               0x184    /* SODIMM 48 */
-                        MX8MM_IOMUXC_SAI5_RXD1_GPIO3_IO22               0x184    /* SODIMM 44 */
-                        MX8MM_IOMUXC_SAI5_RXD2_GPIO3_IO23               0x184    /* SODIMM 42 */
                         MX8MM_IOMUXC_SAI5_RXD3_GPIO3_IO24               0x184    /* SODIMM 46 */
                         MX8MM_IOMUXC_SAI1_MCLK_GPIO4_IO20               0x184    /* SODIMM 88 */
                         MX8MM_IOMUXC_SAI1_RXC_GPIO4_IO1                 0x184    /* SODIMM 90 */
@@ -855,6 +857,16 @@
                 >;
         };
 
+	pinctrl_span_txen: pinctrl-txengrp {
+		fsl,pins = <
+#define GP_TXEN_AUX         <&gpio3 21 GPIO_ACTIVE_HIGH>
+                        MX8MM_IOMUXC_SAI5_RXD0_GPIO3_IO21               0x184    /* SODIMM 48 */
+#define GP_TXEN_METERING    <&gpio3 22 GPIO_ACTIVE_HIGH>
+                        MX8MM_IOMUXC_SAI5_RXD1_GPIO3_IO22               0x184    /* SODIMM 44 */
+#define GP_TXEN_INVERTER    <&gpio3 23 GPIO_ACTIVE_HIGH>
+                        MX8MM_IOMUXC_SAI5_RXD2_GPIO3_IO23               0x184    /* SODIMM 42 */
+		>;
+	};
 
 	pinctrl_can1_int: can1intgrp {
 		fsl,pins = <
@@ -1430,4 +1442,5 @@
 			MX8MM_IOMUXC_SAI5_MCLK_GPIO3_IO25		0x6		/* PMIC_EN_WIFI */
 		>;
 	};
+
 };
